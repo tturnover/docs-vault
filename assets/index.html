@@ -1,0 +1,3252 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Документація</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%233b82f6'/%3E%3Cpath d='M9 6h9.5l5.5 5.5V25a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z' fill='%23fff'/%3E%3Cpath d='M18.5 6v5.5H24z' fill='%23bfdbfe'/%3E%3Cpath d='M11.5 15.5h9M11.5 19h9M11.5 22.5h5.5' stroke='%233b82f6' stroke-width='1.7' stroke-linecap='round'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      --bg: #f5f7fa;
+      --surface: #ffffff;
+      --surface-2: #f8fafc;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --accent: #3b82f6;
+      --accent-strong: #1d4ed8;
+      --accent-soft: #eff6ff;
+      --danger: #ef4444;
+      --warn: #f59e0b;
+      --success: #16a34a;
+      --neutral: #64748b;
+      --on-color: #ffffff;
+      --c-video: #8b5cf6; --c-audio: #ec4899; --c-image: #10b981; --c-pdf: #ef4444;
+      --c-text: #3b82f6; --c-table: #16a34a; --c-archive: #f59e0b; --c-other: #64748b; --c-docx: #2b6cb0; --c-xlsx: #1e7e45;
+
+      --radius: 14px;
+      --radius-sm: 10px;
+      --shadow: 0 2px 10px rgba(0,0,0,.07);
+      --shadow-hover: 0 6px 18px rgba(0,0,0,.12);
+      --shadow-pop: 0 10px 30px rgba(0,0,0,.25);
+      --gap: 10px;
+      --page-width: 1000px;
+      --view-width: 1400px;
+      --btn-height: 42px;
+      --icon-size: 22px;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --crumb-cur: #1d4ed8;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f172a; --surface: #1e293b; --surface-2: #172033; --text: #e2e8f0; --muted: #94a3b8;
+        --border: #334155; --accent-soft: #1e3a5f; --shadow: 0 2px 10px rgba(0,0,0,.4);
+        --shadow-hover: 0 6px 18px rgba(0,0,0,.5); --crumb-cur: #93c5fd; --c-docx: #63b3ed; --c-xlsx: #48bb78;
+      }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; }
+    .container { max-width: var(--page-width); margin: 0 auto; padding: 24px 20px 40px; }
+    body.mode-file .container { max-width: var(--view-width); }
+    body.has-uploads .container { padding-bottom: 260px; }
+    .hidden { display: none !important; }
+    .icon { display: inline-flex; flex-shrink: 0; }
+    .icon svg { width: var(--icon-size); height: var(--icon-size); fill: currentColor; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    body.ro .rw { display: none !important; }
+    body.nodel .del { display: none !important; }
+
+    /* buttons */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      min-height: var(--btn-height); padding: 0 16px; border: none; border-radius: var(--radius-sm);
+      font-family: inherit; font-size: 15px; font-weight: 500; line-height: 1.2; white-space: nowrap;
+      color: var(--on-color); background: var(--neutral); text-decoration: none; cursor: pointer;
+      transition: filter .15s, background .15s;
+    }
+    .btn:hover { filter: brightness(1.1); }
+    .btn:disabled { opacity: .55; cursor: default; filter: none; }
+    .btn-icon { padding: 0; width: var(--btn-height); flex-shrink: 0; }
+    .btn-primary { background: var(--accent); }
+    .btn-danger { background: var(--danger); }
+    .btn-success { background: var(--success); }
+    .btn-ghost { background: transparent; color: var(--muted); }
+    .btn-ghost:hover { background: var(--accent-soft); color: var(--accent); filter: none; }
+    .btn-soft { background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
+    .btn-soft:hover { color: var(--accent); filter: none; }
+
+    /* top bar */
+    .topbar { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .who { display: flex; align-items: center; gap: 2px; padding: 3px 3px 3px 12px; background: var(--surface); border-radius: 999px; box-shadow: var(--shadow); flex-shrink: 0; }
+    .who .role { color: var(--muted); cursor: default; }
+    .who.rw .role { color: var(--success); }
+    .who .btn { border-radius: 999px; min-height: 38px; width: 38px; }
+
+    .disk { display: flex; align-items: center; gap: 8px; min-width: 160px; font-size: 13px; color: var(--muted); }
+    .disk-bar { flex: 1; height: 8px; border-radius: 4px; background: var(--border); overflow: hidden; min-width: 80px; }
+    .disk-fill { height: 100%; width: 0; background: var(--success); transition: width .4s; }
+    .disk.warn .disk-fill { background: var(--warn); }
+    .disk.crit .disk-fill { background: var(--danger); }
+
+    /* breadcrumbs (path bar) */
+    .crumbs {
+      flex: 1; min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 2px;
+      min-height: var(--btn-height); padding: 4px 6px; font-size: 16px;
+      background: var(--surface); border-radius: var(--radius-sm); box-shadow: var(--shadow);
+    }
+    .crumbs a, .crumbs .cur {
+      display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 8px;
+      color: var(--text); text-decoration: none; overflow-wrap: anywhere; line-height: 1.25;
+    }
+    .crumbs a .icon { color: var(--accent); }
+    .crumbs a:hover { background: var(--accent-soft); color: var(--accent); }
+    .crumbs .cur { background: var(--accent-soft); color: var(--crumb-cur); font-weight: 600; }
+    .crumbs .sep { display: inline-flex; color: var(--muted); }
+    .crumbs .icon svg { width: 18px; height: 18px; }
+
+    /* toolbar */
+    .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 14px 0; }
+    .search {
+      flex: 1 1 260px; display: flex; align-items: center; gap: 10px; min-height: var(--btn-height);
+      padding: 0 14px; background: var(--surface); border: 2px solid var(--border);
+      border-radius: var(--radius-sm); color: var(--muted);
+    }
+    .search:focus-within { border-color: var(--accent); color: var(--accent); }
+    .search input {
+      flex: 1; min-width: 0; border: none; outline: none; background: transparent;
+      font-family: inherit; font-size: 16px; color: var(--text); padding: 8px 0;
+    }
+    .search label { display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--muted); white-space: nowrap; cursor: pointer; }
+    select.sort {
+      min-height: var(--btn-height); padding: 0 10px; border-radius: var(--radius-sm); border: 2px solid var(--border);
+      background: var(--surface); color: var(--text); font-family: inherit; font-size: 14px;
+    }
+
+    /* listing */
+    .list { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+    .row { display: flex; align-items: center; gap: 12px; padding: 8px 10px 8px 16px; border-bottom: 1px solid var(--border); min-height: 56px; }
+    .row:last-child { border-bottom: none; }
+    .row:hover { background: var(--surface-2); }
+    .row .t-icon .icon svg { width: 26px; height: 26px; }
+    .row-main { flex: 1; min-width: 0; color: inherit; text-decoration: none; display: flex; flex-direction: column; gap: 2px; }
+    .row-name { font-weight: 500; overflow-wrap: anywhere; line-height: 1.3; }
+    .row-main:hover .row-name { color: var(--accent); }
+    .row-path { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+    .row-meta { font-size: 13px; color: var(--muted); white-space: nowrap; text-align: right; }
+    .row-actions { display: flex; gap: 2px; }
+    .row.dir .row-name { font-weight: 600; }
+    .empty { padding: 36px 16px; text-align: center; color: var(--muted); }
+
+    .t-video { color: var(--c-video); } .t-audio { color: var(--c-audio); } .t-image { color: var(--c-image); }
+    .t-pdf { color: var(--c-pdf); } .t-text, .t-md { color: var(--c-text); } .t-csv { color: var(--c-table); }
+    .t-archive { color: var(--c-archive); } .t-other, .t-legacy { color: var(--c-other); } .t-dir { color: var(--accent); }
+    .t-model { color: #f97316; }
+
+    /* PDF viewer */
+    .stage.pdfv { background: transparent; box-shadow: none; }
+    .pdf-pages { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 12px; overflow-x: auto;
+      background: var(--surface-2); border-radius: var(--radius); }
+    .pdf-page { position: relative; flex-shrink: 0; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,.18); }
+    .pdf-page canvas { display: block; width: 100%; height: 100%; }
+    .stage.model { background: var(--surface-2); display: flex; flex-direction: column; align-items: center; }
+    .stage.model .sheet-tabs { align-self: stretch; background: var(--surface); }
+    .model-view { display: flex; justify-content: center; align-items: center; align-self: stretch; }
+    .stage.model canvas { display: block; max-width: 100%; }
+    .t-docx, .t-odt { color: var(--c-docx); } .t-xlsx, .t-ods { color: var(--c-xlsx); }
+
+    /* docx: rendered as a white "paper" page in both themes */
+    .stage.docx { background: var(--surface-2); padding: 20px; }
+    .docx-page {
+      background: #fff; color: #1f2937; max-width: 860px; margin: 0 auto; padding: 48px 56px; border-radius: 4px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.15); font-family: Calibri, Carlito, "Segoe UI", Roboto, Arial, sans-serif;
+      font-size: 15px; line-height: 1.5; overflow-wrap: anywhere;
+    }
+    .docx-page p, .docx-page li, .docx-page h1, .docx-page h2, .docx-page h3, .docx-page h4, .docx-page h5, .docx-page h6 { white-space: pre-wrap; tab-size: 6; }
+    .docx-page p { margin: 0 0 .45em; }
+    .docx-page h1, .docx-page h2, .docx-page h3, .docx-page h4, .docx-page h5, .docx-page h6 { margin: .8em 0 .4em; line-height: 1.25; color: #1e3a8a; }
+    .docx-page h1 { font-size: 1.7em; } .docx-page h2 { font-size: 1.4em; } .docx-page h3 { font-size: 1.2em; }
+    .docx-page h4, .docx-page h5, .docx-page h6 { font-size: 1.05em; }
+    .docx-page ul, .docx-page ol { padding-left: 1.6em; margin: 0 0 .5em; }
+    .docx-page .tbl { overflow-x: auto; margin: .5em 0; }
+    .docx-page table { border-collapse: collapse; width: 100%; }
+    .docx-page td { border: 1px solid #cbd5e1; padding: 4px 8px; vertical-align: top; }
+    .docx-page td.vm { border-top-color: transparent; }
+    .docx-page td p:last-child, .docx-page li > p { margin-bottom: 0; }
+    .docx-page img { max-width: 100%; height: auto; }
+    .docx-page a { color: #2563eb; }
+    .docx-page hr.pb { border: 0; border-top: 2px dashed #cbd5e1; margin: 1.5em 0; }
+    .docx-noimg { color: #6b7280; font-style: italic; }
+
+    /* xlsx */
+    .sheet-tabs { display: flex; flex-wrap: wrap; gap: 4px; padding: 8px; border-bottom: 1px solid var(--border); }
+    .sheet-tabs button { border: 0; background: transparent; color: var(--muted); padding: 6px 12px; border-radius: 8px; font: inherit; font-size: 14px; cursor: pointer; }
+    .sheet-tabs button:hover { background: var(--surface-2); color: var(--text); }
+    .sheet-tabs button.on { background: var(--accent-soft); color: var(--crumb-cur); font-weight: 600; }
+    .xl td { white-space: pre-wrap; }
+    .xl td.num { text-align: right; white-space: nowrap; }
+    .xl th.col { text-align: center; color: var(--muted); font-weight: 500; min-width: 48px; }
+
+    .drop-hint {
+      position: fixed; inset: 8px; z-index: 40; display: flex; align-items: flex-end; justify-content: center;
+      border: 3px dashed var(--accent); border-radius: var(--radius); pointer-events: none; padding-bottom: 24px;
+    }
+    .drop-hint span {
+      padding: 10px 20px; border-radius: 999px; background: var(--accent); color: var(--on-color);
+      font-size: 16px; font-weight: 600; box-shadow: var(--shadow-pop); max-width: 90vw; overflow-wrap: anywhere; text-align: center;
+    }
+    .drop-target { outline: 3px solid var(--accent) !important; outline-offset: -3px; background: var(--accent-soft) !important; }
+    .row.dragging { opacity: .45; }
+    .row[draggable="true"] { cursor: grab; }
+
+    /* file view */
+    /* file header: name on its own line(s), size/date under it, buttons on a separate row */
+    .view-head { display: flex; flex-direction: column; align-items: stretch; gap: 10px; margin-bottom: 12px; }
+    .view-title { display: flex; align-items: flex-start; gap: 10px; min-width: 0; }
+    .view-title > .icon { margin-top: 2px; }
+    .view-name-wrap { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .view-title h1 { font-size: 20px; font-weight: 600; overflow-wrap: anywhere; line-height: 1.3; }
+    .view-title .meta { font-size: 13px; color: var(--muted); }
+    /* buttons stretch evenly across the full width of the preview (no empty space on the right) */
+    .view-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+    .view-actions > .btn { flex: 1 1 0; min-width: var(--btn-height); }
+    .stage { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+    .stage.media { background: #000; display: flex; align-items: center; justify-content: center; }
+    .stage video { display: block; width: 100%; max-height: calc(100vh - 170px); background: #000; }
+    .stage.audio { padding: 40px 20px; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+    .stage.audio .icon svg { width: 72px; height: 72px; }
+    .stage.audio audio { width: min(640px, 100%); }
+    .stage.image { background: var(--surface-2); display: flex; justify-content: center; padding: 12px; }
+    .stage.image img { max-width: 100%; max-height: calc(100vh - 190px); object-fit: contain; cursor: zoom-in; }
+    .stage.image.zoom img { max-height: none; cursor: zoom-out; }
+    .stage iframe { display: block; width: 100%; height: calc(100vh - 160px); min-height: 480px; border: 0; background: #fff; }
+    .stage.text pre { margin: 0; padding: 18px 20px; font-family: var(--mono); font-size: 14px; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; tab-size: 4; }
+    .stage.nopreview { padding: 48px 20px; text-align: center; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 14px; }
+    .stage.nopreview .icon svg { width: 64px; height: 64px; }
+    /* big buttons on the "no preview" screen: always with text, side by side or stacked on phones */
+    .np-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; width: min(440px, 100%); }
+    .stage .np-actions .btn { flex: 1 1 190px; width: auto; padding: 0 18px; min-height: 48px; }
+    .stage .np-actions .btn .lbl { display: inline !important; }
+    .media-error { color: #fff; padding: 40px 20px; text-align: center; }
+    .note { font-size: 13px; color: var(--muted); margin-top: 8px; }
+
+    /* markdown */
+    .md { padding: 24px 32px; line-height: 1.65; font-size: 16px; overflow-wrap: anywhere; }
+    .md > * + * { margin-top: .8em; }
+    .md h1, .md h2, .md h3, .md h4, .md h5, .md h6 { line-height: 1.3; margin-top: 1.3em; }
+    .md h1:first-child, .md h2:first-child, .md h3:first-child { margin-top: 0; }
+    .md h1 { font-size: 1.8em; border-bottom: 1px solid var(--border); padding-bottom: .2em; }
+    .md h2 { font-size: 1.45em; border-bottom: 1px solid var(--border); padding-bottom: .2em; }
+    .md h3 { font-size: 1.2em; }
+    .md a { color: var(--accent); }
+    .md ul, .md ol { padding-left: 1.6em; }
+    .md li + li { margin-top: .25em; }
+    .md li.task { list-style: none; margin-left: -1.3em; }
+    .md li.task input { margin-right: .5em; }
+    .md code { font-family: var(--mono); font-size: .9em; background: var(--surface-2); border: 1px solid var(--border); padding: .1em .35em; border-radius: 5px; }
+    .md pre { background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; overflow-x: auto; }
+    .md pre code { background: none; border: 0; padding: 0; font-size: 14px; }
+    .md blockquote { border-left: 4px solid var(--accent); padding: .2em 1em; color: var(--muted); background: var(--surface-2); border-radius: 0 8px 8px 0; }
+    .md hr { border: 0; border-top: 1px solid var(--border); }
+    .md img { max-width: 100%; border-radius: 6px; }
+    .md table, .csv table { border-collapse: collapse; }
+    .md th, .md td, .csv th, .csv td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+    .md th, .csv th { background: var(--surface-2); font-weight: 600; }
+    .md .tbl { overflow-x: auto; }
+    .csv { overflow: auto; max-height: calc(100vh - 170px); font-size: 14px; }
+    .csv th { position: sticky; top: 0; }
+    .csv td.n { color: var(--muted); text-align: right; }
+
+    /* editor */
+    .editor { display: flex; flex-direction: column; }
+    .editor textarea {
+      display: block; width: 100%; min-height: calc(100vh - 200px); resize: vertical; border: 0; outline: none;
+      padding: 18px 20px; font-family: var(--mono); font-size: 14px; line-height: 1.55; tab-size: 4;
+      background: var(--surface); color: var(--text);
+    }
+    .stage.editor { position: relative; }
+    .editor textarea.md { padding-right: 56px; }   /* keep text clear of the help button */
+    .md-help {
+      position: absolute; top: 8px; right: 8px; width: 38px; height: 38px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; text-decoration: none;
+      color: var(--accent); background: var(--accent-soft); opacity: .85; transition: opacity .15s;
+    }
+    .md-help { border: 0; padding: 0; cursor: pointer; }
+    .md-help:hover, .md-help:focus-visible { opacity: 1; }
+    /* Markdown cheat sheet */
+    .modal.cheat { width: min(760px, 100%); }
+    .cs-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .cs-list { display: flex; flex-direction: column; gap: 14px; }
+    .cs-title { font-weight: 600; font-size: 14px; margin-bottom: 6px; }
+    .cs-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .cs-src {
+      text-align: left; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface-2);
+      color: var(--text); padding: 8px 10px; cursor: pointer; font: inherit; overflow-x: auto;
+    }
+    .cs-src:hover, .cs-src:focus-visible { border-color: var(--accent); background: var(--accent-soft); }
+    .cs-src pre { margin: 0; font-family: var(--mono); font-size: 13px; line-height: 1.5; white-space: pre; }
+    .cs-out { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px 12px; font-size: 14px; line-height: 1.5; color: var(--text); }
+    .cs-out.md > * + * { margin-top: .4em; }
+    .cs-out.md h1 { font-size: 1.4em; } .cs-out.md h2 { font-size: 1.2em; } .cs-out.md h3 { font-size: 1.05em; }
+    .cs-out.md h1, .cs-out.md h2 { border: 0; padding: 0; margin-top: 0; }
+    .cs-out a { pointer-events: none; }   /* examples are not real links */
+    .cs-note { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    @media (max-width: 560px) { .cs-pair { grid-template-columns: 1fr; } }
+    .md-help svg { width: 24px; height: 24px; fill: currentColor; }
+    .editor-status { font-size: 13px; color: var(--muted); padding: 8px 14px; border-top: 1px solid var(--border); display: flex; gap: 16px; }
+    .editor-status .dirty { color: var(--warn); font-weight: 600; }
+
+    /* uploads panel */
+    .uploads {
+      position: fixed; right: 16px; bottom: 16px; z-index: 50; width: min(480px, calc(100vw - 32px));
+      display: flex; flex-direction: column; max-height: 60vh;
+      background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow-pop); overflow: hidden;
+    }
+    .up-head { display: flex; align-items: center; gap: 8px; padding: 10px 10px 10px 16px; }
+    .up-summary { flex: 1; min-width: 0; }
+    .up-title { font-weight: 600; }
+    .up-detail { font-size: 13px; color: var(--muted); margin-top: 2px; }
+    .up-list { overflow-y: auto; border-top: 1px solid var(--border); }
+    .uploads.collapsed .up-list { display: none; }
+    .up-item { display: flex; align-items: center; gap: 10px; padding: 10px 10px 10px 16px; border-bottom: 1px solid var(--border); }
+    .up-item:last-child { border-bottom: none; }
+    .up-main { flex: 1; min-width: 0; }
+    .up-name { font-weight: 500; overflow-wrap: anywhere; line-height: 1.3; }
+    .up-dest { font-size: 12px; color: var(--muted); margin-bottom: 6px; overflow-wrap: anywhere; }
+    .up-bar { height: 8px; border-radius: 4px; background: var(--border); overflow: hidden; }
+    .up-fill { height: 100%; width: 0; background: var(--accent); transition: width .2s; }
+    .up-item.done .up-fill { background: var(--success); }
+    .up-item.error .up-fill { background: var(--danger); }
+    .up-item.cancelled .up-fill { background: var(--neutral); }
+    .up-info { font-size: 13px; color: var(--muted); margin-top: 6px; line-height: 1.4; }
+    .up-item.error .up-info { color: var(--danger); }
+
+    /* hidden / password-protected folders */
+    .row-badge { display: inline-flex; vertical-align: -3px; margin-left: 6px; color: var(--muted); }
+    .row-badge .icon svg { width: 16px; height: 16px; }
+    .row-badge.hid { color: #d97706; }
+    button.row-badge { border: 0; background: none; padding: 0; cursor: pointer; font: inherit; }
+    .unlock { max-width: 400px; margin: 0 auto; padding: 36px 16px; display: flex; flex-direction: column; gap: 12px; align-items: center; text-align: center; }
+    .unlock > .icon svg { width: 48px; height: 48px; color: var(--accent); }
+    .unlock h2 { font-size: 19px; color: var(--text); overflow-wrap: anywhere; }
+    .unlock p { color: var(--muted); }
+    .unlock-form { display: flex; gap: 8px; width: 100%; }
+    .unlock-form .btn .lbl { display: inline !important; }
+    .unlock-msg { color: var(--danger); min-height: 1.4em; }
+    .txt-in { flex: 1; min-width: 0; min-height: 44px; padding: 0 12px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+      background: var(--surface); color: var(--text); font: inherit; font-size: 16px; }
+    .txt-in:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+    .acc-opts { display: flex; flex-direction: column; gap: 8px; }
+    .acc-opts label { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; }
+    .acc-opts label:has(input:checked) { border-color: var(--accent); background: var(--surface-2); }
+    .acc-opts input { margin-top: 3px; }
+    .acc-opts b { display: block; }
+    .acc-opts small { display: block; color: var(--muted); line-height: 1.35; }
+    .acc-pw { display: flex; flex-direction: column; gap: 6px; }
+    .acc-err { color: var(--danger); min-height: 1.2em; }
+    .modal-back { position: fixed; inset: 0; z-index: 70; background: rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center; padding: 16px; }
+    .modal { width: min(480px, 100%); max-height: calc(100vh - 32px); overflow: auto; background: var(--surface); border-radius: var(--radius);
+      box-shadow: var(--shadow-pop); padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+    .modal h2 { font-size: 19px; }
+    .modal p { color: var(--muted); line-height: 1.4; }
+    .modal ul { list-style: none; border: 1px solid var(--border); border-radius: var(--radius-sm); max-height: 220px; overflow: auto; }
+    .modal li { padding: 8px 12px; border-bottom: 1px solid var(--border); overflow-wrap: anywhere; font-size: 14px; }
+    .modal li:last-child { border-bottom: none; }
+    .modal li small { display: block; color: var(--muted); }
+    .modal .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .modal .choices .btn { width: 100%; padding: 0 12px; }
+    .modal .btn .lbl { display: inline !important; }   /* keep labels on phones too */
+    /* floating "back to top" button, semi-transparent */
+    .to-top {
+      position: fixed; right: 18px; bottom: 18px; z-index: 45; width: 48px; height: 48px; padding: 0; border: 0; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+      background: rgba(15, 23, 42, .45); color: #fff; box-shadow: 0 4px 14px rgba(0,0,0,.2);
+      -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); transition: background .2s;
+    }
+    .to-top:hover, .to-top:focus-visible { background: rgba(15, 23, 42, .75); }
+    .to-top .icon svg { width: 26px; height: 26px; }
+    @media (prefers-color-scheme: dark) {
+      .to-top { background: rgba(226, 232, 240, .35); color: #0f172a; }
+      .to-top:hover, .to-top:focus-visible { background: rgba(226, 232, 240, .6); }
+    }
+    body.has-uploads .to-top { right: auto; left: 18px; }   /* don't cover the uploads panel */
+    .toast {
+      position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 60;
+      padding: 10px 18px; border-radius: 10px; background: var(--text); color: var(--bg); font-size: 14px;
+      box-shadow: var(--shadow-pop);
+    }
+
+    @media (max-width: 700px) {
+      .container { padding: 14px 10px 30px; }
+      .row { padding: 8px 6px 8px 10px; gap: 10px; }
+      .row-meta { display: none; }
+      .row-main .row-sub { display: block; }
+      .md { padding: 16px; }
+      .stage.docx { padding: 8px; }
+      .docx-page { padding: 20px 16px; }
+      .btn .lbl { display: none; }
+      .btn:has(.lbl) { padding: 0; width: var(--btn-height); }
+      .uploads { right: 8px; left: 8px; bottom: 8px; width: auto; }
+      .disk { display: none; }
+    }
+    .row-sub { display: none; font-size: 12px; color: var(--muted); }
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  </style>
+</head>
+<body class="ro nodel"><!-- read-only until the server confirms write access (no flash of edit UI) -->
+  <div class="container">
+    <header class="topbar">
+      <nav class="crumbs" id="crumbs" aria-label="Шлях"></nav>
+      <div class="disk hidden" id="disk"></div>
+      <button class="btn btn-primary hidden" id="login-btn" type="button" title="Увійти для редагування"></button>
+      <div class="who hidden" id="who">
+        <span class="icon role" id="role-icon"></span>
+        <button class="btn btn-ghost btn-icon" id="logout-btn" type="button" title="Вийти (залишиться лише перегляд)" aria-label="Вийти"></button>
+      </div>
+    </header>
+
+    <!-- folder view -->
+    <section id="dir-view" class="hidden">
+      <div class="toolbar">
+        <div class="search">
+          <span class="icon" id="search-icon"></span>
+          <input type="search" id="search" placeholder="Пошук у цій папці" autocomplete="off" aria-label="Пошук">
+          <label id="deep-wrap" class="hidden" title="Шукати також у вкладених папках"><input type="checkbox" id="deep"> у підпапках</label>
+        </div>
+        <select class="sort" id="sort" aria-label="Сортування">
+          <option value="name">За назвою</option>
+          <option value="mtime">Спочатку нові</option>
+          <option value="size">За розміром</option>
+          <option value="type">За типом</option>
+        </select>
+        <button class="btn btn-primary rw" id="upload-btn" type="button" title="Завантажити файли (також: перетягнути сюди або Ctrl+V)"><span class="lbl">Завантажити</span></button>
+        <button class="btn btn-soft rw" id="note-btn" type="button" title="Новий текстовий файл"><span class="lbl">Нотатка</span></button>
+        <button class="btn btn-soft rw" id="mkdir-btn" type="button" title="Нова папка"><span class="lbl">Папка</span></button>
+        <input type="file" id="file-input" multiple hidden>
+      </div>
+      <div class="list" id="list"></div>
+    </section>
+
+    <!-- file view -->
+    <section id="file-view" class="hidden">
+      <div class="view-head">
+        <div class="view-title">
+          <span class="icon" id="view-icon"></span>
+          <div class="view-name-wrap">
+            <h1 id="view-name"></h1>
+            <span class="meta" id="view-meta"></span>
+          </div>
+        </div>
+        <div class="view-actions" id="view-actions"></div>
+      </div>
+      <div id="stage"></div>
+    </section>
+  </div>
+
+  <div class="drop-hint hidden" id="drop-hint"><span id="drop-label"></span></div>
+  <button class="to-top hidden" id="to-top" type="button" title="Нагору" aria-label="Нагору"></button>
+  <div class="toast hidden" id="toast" role="status"></div>
+
+  <section class="uploads hidden" id="uploads" aria-label="Завантаження">
+    <div class="up-head">
+      <div class="up-summary">
+        <div class="up-title" id="up-title"></div>
+        <div class="up-detail" id="up-detail"></div>
+      </div>
+      <button class="btn btn-ghost btn-icon" id="up-clear" type="button" title="Прибрати завершені" aria-label="Прибрати завершені"></button>
+      <button class="btn btn-ghost btn-icon" id="up-toggle" type="button" title="Згорнути / розгорнути" aria-label="Згорнути або розгорнути"></button>
+    </div>
+    <div class="up-list" id="up-list"></div>
+  </section>
+
+  <script>
+    'use strict';
+
+    const DISK_URL = '/disk.json';
+    const TEXT_MAX = 5 * 1024 * 1024;   // max size to preview / edit as text
+    const CSV_MAX_ROWS = 5000;
+
+    /* ---------- icons ---------- */
+    const ICONS = {
+      folder: 'M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z',
+      create_new_folder: 'M20 6h-8l-2-2H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-1 8h-3v3h-2v-3h-3v-2h3V9h2v3h3v2z',
+      search: 'M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z',
+      edit: 'M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z',
+      download: 'M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z',
+      link: 'M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z',
+      check: 'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z',
+      delete: 'M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z',
+      upload: 'M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z',
+      file: 'M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13z',
+      text: 'M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z',
+      note_add: 'M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 14h-3v3h-2v-3H8v-2h3v-3h2v3h3v2zm-3-7V3.5L18.5 9H13z',
+      video: 'M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z',
+      audio: 'M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z',
+      image: 'M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z',
+      pdf: 'M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9.5h1v-1H9v1zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm10 5.5h1v-3h-1v3z',
+      table: 'M20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM8 20H4v-4h4v4zm0-6H4v-4h4v4zm0-6H4V4h4v4zm6 12h-4v-4h4v4zm0-6h-4v-4h4v4zm0-6h-4V4h4v4zm6 12h-4v-4h4v4zm0-6h-4v-4h4v4zm0-6h-4V4h4v4z',
+      archive: 'M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27zM12 17.5L6.5 12H10v-2h4v2h3.5L12 17.5zM5.12 5l.81-1h12l.94 1H5.12z',
+      move: 'M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6 12v-3h-4v-4h4V8l5 5-5 5z',
+      open_in_new: 'M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z',
+      chevron_left: 'M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z',
+      chevron_right: 'M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z',
+      save: 'M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z',
+      visibility: 'M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z',
+      arrow_back: 'M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z',
+      home: 'M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z',
+      book: 'M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z',
+      close: 'M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z',
+      replay: 'M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z',
+      clear_all: 'M5 13h14v-2H5v2zm-2 4h14v-2H3v2zM7 7v2h14V7H7z',
+      expand_more: 'M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z',
+      expand_less: 'M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z',
+      login: 'M11 7L9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5-5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8v14z',
+      logout: 'M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z',
+      info: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z',
+      arrow_upward: 'M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z',
+      cube: 'M18.25 7.6l-5.5-3.18c-.46-.27-1.04-.27-1.5 0L5.75 7.6c-.46.27-.75.76-.75 1.3v6.35c0 .54.29 1.03.75 1.3l5.5 3.18c.46.27 1.04.27 1.5 0l5.5-3.18c.46-.27.75-.76.75-1.3V8.9c0-.54-.29-1.03-.75-1.3zM7 14.96v-4.62l4 2.32v4.61l-4-2.31zm5-4.03L8 8.61l4-2.31 4 2.31-4 2.32zm1 6.34v-4.61l4-2.32v4.62l-4 2.31z',
+      replace: 'M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8c-.45-.83-.7-1.79-.7-2.8 0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.44.84.7 1.79.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z',
+      skip: 'M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z',
+      content_copy: 'M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z',
+      lock: 'M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z',
+      lock_open: 'M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6h1.9c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 12H6V10h12v10z',
+      visibility_off: 'M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z',
+      shield: 'M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z',
+      storage: 'M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z'
+    };
+    const iconHtml = name => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + ICONS[name] + '"/></svg>';
+    function icon(name) {
+      const s = document.createElement('span');
+      s.className = 'icon';
+      s.innerHTML = iconHtml(name);
+      return s;
+    }
+
+    /* ---------- helpers ---------- */
+    const $ = id => document.getElementById(id);
+    const decodeSeg = s => { try { return decodeURIComponent(s); } catch (_) { return s; } };
+    const pathOf = segs => '/' + segs.map(encodeURIComponent).join('/');
+    const dirHref = segs => segs.length ? pathOf(segs) + '/' : '/';
+    const viewHref = segs => pathOf(segs) + '?view';
+    const editHref = segs => pathOf(segs) + '?view#edit';
+    const collator = new Intl.Collator('uk', { numeric: true, sensitivity: 'base' });
+    const num = n => n.toLocaleString('uk-UA', { maximumFractionDigits: 1 });
+    const isDir = p => /Dir$/.test(p.path_type);
+    const extOf = name => { const i = name.lastIndexOf('.'); return i > 0 ? name.slice(i + 1).toLowerCase() : ''; };
+    const badName = s => /[\/\\]/.test(s) || s === '.' || s === '..';
+
+    function formatSize(b) {
+      if (b == null) return '';
+      if (b < 1024) return Math.round(b) + ' B';
+      if (b < 1048576) return num(b / 1024) + ' КБ';
+      if (b < 1073741824) return num(b / 1048576) + ' МБ';
+      if (b < 1099511627776) return num(b / 1073741824) + ' ГБ';
+      return num(b / 1099511627776) + ' ТБ';
+    }
+    function formatEta(sec) {
+      if (!isFinite(sec) || sec < 0) return '…';
+      sec = Math.round(sec);
+      if (sec < 60) return sec + ' с';
+      if (sec < 3600) return Math.floor(sec / 60) + ' хв ' + (sec % 60) + ' с';
+      return Math.floor(sec / 3600) + ' год ' + Math.floor((sec % 3600) / 60) + ' хв';
+    }
+    function formatDate(m) {
+      if (m == null || m === '') return '';
+      const d = new Date(typeof m === 'number' ? m : (/^\d+$/.test(m) ? Number(m) : m));
+      if (isNaN(d)) return '';
+      return d.toLocaleString('uk-UA', { dateStyle: 'medium', timeStyle: 'short' });
+    }
+    function escapeHtml(s) {
+      return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    function el(tag, props = {}, ...children) {
+      const node = document.createElement(tag);
+      for (const [k, v] of Object.entries(props)) {
+        if (v == null || v === false) continue;
+        if (k === 'class') node.className = v;
+        else if (k === 'text') node.textContent = v;
+        else if (k.startsWith('on')) node.addEventListener(k.slice(2), v);
+        else node.setAttribute(k, v === true ? '' : v);
+      }
+      node.append(...children.filter(c => c != null));
+      return node;
+    }
+    function setBtn(btn, iconName, label) {
+      btn.replaceChildren(icon(iconName));
+      if (label) btn.appendChild(el('span', { class: 'lbl', text: label }));
+    }
+    function button(iconName, label, cls, onclick, opts = {}) {
+      const b = el('button', { class: 'btn ' + (cls || 'btn-soft'), type: 'button',
+        title: opts.title || label, 'aria-label': opts.title || label, onclick });
+      if (opts.iconOnly) { b.classList.add('btn-icon'); setBtn(b, iconName, ''); }
+      else setBtn(b, iconName, label);
+      return b;
+    }
+    function linkBtn(iconName, label, cls, href, opts = {}) {
+      const a = el('a', { class: 'btn ' + (cls || 'btn-soft'), href, title: opts.title || label, 'aria-label': opts.title || label,
+        download: opts.download, target: opts.target, rel: opts.target ? 'noopener' : null });
+      if (opts.iconOnly) { a.classList.add('btn-icon'); setBtn(a, iconName, ''); }
+      else setBtn(a, iconName, label);
+      return a;
+    }
+
+    let toastTimer = null;
+    function toast(msg, ms = 2200) {
+      const t = $('toast');
+      t.textContent = msg;
+      t.classList.remove('hidden');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.add('hidden'), ms);
+    }
+
+    // link to something that no longer exists → go to the deepest folder of that path that still exists
+    async function goNearestExisting(segs) {
+      for (let k = segs.length - 1; k >= 0; k--) {
+        const dir = segs.slice(0, k);
+        try {
+          const d = await getJson(dirHref(dir) + '?json');
+          if (d.dir_exists === false) continue;
+          toast('Не знайдено: /' + segs.join('/'), 4500);
+          navigate(dirHref(dir), true);
+          return;
+        } catch (_) {}
+      }
+      navigate('/', true);
+    }
+
+    async function getJson(url) {
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) {
+        const err = new Error('HTTP ' + res.status);
+        err.status = res.status;
+        // 403 {"locked": "/folder"}: password-protected folder (see the proxy's vault.js)
+        if (res.status === 403) { try { const j = await res.json(); if (j && j.locked) err.locked = j.locked; } catch (_) {} }
+        throw err;
+      }
+      return res.json();
+    }
+
+    async function copyText(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        try { await navigator.clipboard.writeText(text); return true; } catch (_) {}
+      }
+      const ta = el('textarea', { readonly: '', style: 'position:fixed;top:0;left:0;opacity:0' });
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, text.length);
+      let ok = false;
+      try { ok = document.execCommand('copy'); } catch (_) {}
+      ta.remove();
+      return ok;
+    }
+    async function copyLink(segs) {
+      const ok = await copyText(location.origin + pathOf(segs));
+      toast(ok ? 'Посилання скопійовано' : 'Не вдалося скопіювати');
+    }
+
+    /* ---------- file types ---------- */
+    const TYPES = {
+      video: ['mp4', 'm4v', 'webm', 'mov', 'mkv', 'ogv', 'avi', 'ts', 'm2ts', '3gp'],
+      audio: ['mp3', 'wav', 'ogg', 'oga', 'opus', 'm4a', 'aac', 'flac', 'weba'],
+      image: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'avif', 'ico'],
+      pdf: ['pdf'],
+      md: ['md', 'markdown', 'mdown'],
+      csv: ['csv', 'tsv'],
+      text: ['txt', 'log', 'json', 'xml', 'yml', 'yaml', 'toml', 'ini', 'cfg', 'conf', 'env', 'properties',
+             'sh', 'bash', 'ps1', 'bat', 'cmd', 'py', 'js', 'ts', 'css', 'html', 'htm', 'c', 'h', 'cpp', 'hpp',
+             'cs', 'java', 'go', 'rs', 'lua', 'sql', 'srt', 'vtt', 'rst', 'tex'],   // others (e.g. .param) → «Показати як текст» on demand
+      archive: ['zip', 'rar', '7z', 'tar', 'gz', 'tgz', 'bz2', 'xz'],
+      docx: ['docx', 'docm', 'dotx'],
+      xlsx: ['xlsx', 'xlsm', 'xltx'],
+      odt: ['odt', 'ott', 'fodt'],
+      ods: ['ods', 'ots', 'fods'],
+      model: ['stl'],
+      legacy: ['doc', 'xls', 'ppt', 'pptx', 'rtf', 'odp']
+    };
+    const TYPE_ICON = { video: 'video', audio: 'audio', image: 'image', pdf: 'pdf', md: 'text', csv: 'table',
+      text: 'text', archive: 'archive', other: 'file', dir: 'folder', docx: 'text', xlsx: 'table', odt: 'text', ods: 'table', model: 'cube', legacy: 'file' };
+    const TYPE_ORDER = { dir: 0, md: 1, docx: 2, odt: 2, pdf: 3, xlsx: 4, ods: 4, text: 5, csv: 6, image: 7, video: 8, audio: 9, archive: 10, model: 10, legacy: 11, other: 12 };
+    const EXT_TYPE = {};
+    for (const [t, list] of Object.entries(TYPES)) list.forEach(e => { EXT_TYPE[e] = t; });
+    const typeOf = name => EXT_TYPE[extOf(name)] || 'other';
+    const isTextual = t => t === 'text' || t === 'md' || t === 'csv';
+    function typeIcon(t) {
+      const i = icon(TYPE_ICON[t] || 'file');
+      i.classList.add('t-' + t);
+      return i;
+    }
+
+    /* ---------- state ---------- */
+    const S = {
+      segs: [], mode: 'dir',
+      user: '', canWrite: false, canDelete: false, searchAllowed: false,
+      items: [], loadFailed: false, searchResults: null, searchSeq: 0,
+      editor: null
+    };
+
+    function applyPerms(data) {
+      S.user = data.user || '';
+      S.canWrite = !!data.allow_upload;
+      S.canDelete = !!data.allow_delete;
+      S.searchAllowed = !!data.allow_search;
+      S.archiveAllowed = !!data.allow_archive;
+      document.body.classList.toggle('ro', !S.canWrite);
+      document.body.classList.toggle('nodel', !S.canDelete);
+      const who = $('who');
+      const anon = !!data.auth && !S.user;
+      $('login-btn').classList.toggle('hidden', !anon);
+      who.classList.toggle('hidden', !S.user);
+      if (S.user) {
+        const role = $('role-icon');
+        const label = S.canWrite ? 'Редагування' : 'Лише перегляд';
+        role.innerHTML = iconHtml(S.canWrite ? 'edit' : 'visibility');
+        role.title = label;
+        role.setAttribute('aria-label', label);
+        who.classList.toggle('rw', S.canWrite);
+        who.classList.remove('hidden');
+      }
+      $('deep-wrap').classList.toggle('hidden', !S.searchAllowed);
+    }
+
+    /* ---------- disk ---------- */
+    async function loadDisk() {
+      const box = $('disk');
+      try {
+        const d = await getJson(DISK_URL);
+        const total = Number(d.total);
+        const free = d.free != null ? Number(d.free) : total - Number(d.used);
+        if (!(total > 0) || !isFinite(free)) throw new Error('bad data');
+        const pct = Math.min(100, Math.max(0, (total - free) / total * 100));
+        const fill = el('div', { class: 'disk-fill' });
+        box.replaceChildren(icon('storage'), el('div', { class: 'disk-bar' }, fill), el('span', { text: Math.round(pct) + '%' }));
+        fill.style.width = pct + '%';
+        box.classList.toggle('warn', pct >= 70 && pct < 90);
+        box.classList.toggle('crit', pct >= 90);
+        box.title = 'Вільно ' + formatSize(free) + ' з ' + formatSize(total);
+        box.classList.remove('hidden');
+        return true;
+      } catch (_) {
+        box.classList.add('hidden');
+        return false;
+      }
+    }
+
+    /* ---------- breadcrumbs ---------- */
+    function renderCrumbs(segs, isFile) {
+      const item = (iconNode, text, href, dropSegs) => href
+        ? el('a', { href, 'data-spa': true, 'data-drop': JSON.stringify(dropSegs) }, iconNode, el('span', { text }))
+        : el('span', { class: 'cur', 'aria-current': 'page' }, iconNode, el('span', { text }));
+      const parts = [item(icon('home'), 'Головна', segs.length ? '/' : null, [])];
+      segs.forEach((s, i) => {
+        const last = i === segs.length - 1;
+        const ic = last && isFile ? typeIcon(typeOf(s)) : icon('folder');
+        parts.push(el('span', { class: 'sep' }, icon('chevron_right')));
+        parts.push(item(ic, s, last ? null : dirHref(segs.slice(0, i + 1)), segs.slice(0, i + 1)));
+      });
+      $('crumbs').replaceChildren(...parts);
+    }
+
+    /* ---------- folder view ---------- */
+    function sortItems(list) {
+      const mode = $('sort').value;
+      return list.slice().sort((a, b) => {
+        const da = isDir(a), db = isDir(b);
+        if (da !== db) return da ? -1 : 1;
+        if (mode === 'mtime') return (b.mtime || 0) - (a.mtime || 0);
+        if (mode === 'size' && !da) return (b.size || 0) - (a.size || 0);
+        if (mode === 'type' && !da) {
+          const d = TYPE_ORDER[typeOf(a.name)] - TYPE_ORDER[typeOf(b.name)];
+          if (d) return d;
+        }
+        return collator.compare(a.name, b.name);
+      });
+    }
+
+    function renderRow(p, baseSegs) {
+      // p.name may contain "/" for recursive search results
+      const rel = p.name.split('/').filter(Boolean);
+      const segs = baseSegs.concat(rel);
+      const name = rel[rel.length - 1] || p.name;
+      const dir = isDir(p);
+      const t = dir ? 'dir' : typeOf(name);
+      const href = dir ? dirHref(segs) : viewHref(segs);
+      const meta = dir ? formatDate(p.mtime) : [formatSize(p.size), formatDate(p.mtime)].filter(Boolean).join(' · ');
+
+      const badge = !dir ? null
+        : p.vault_hidden ? el('span', { class: 'row-badge hid', title: 'Прихована: бачить лише редактор' }, icon('visibility_off'))
+        : p.vault_locked ? el('span', { class: 'row-badge', title: p.vault_open ? 'Захищена паролем (відкрито)' : 'Захищена паролем' }, icon(p.vault_open ? 'lock_open' : 'lock'))
+        : null;
+      const main = el('a', { class: 'row-main', href, 'data-spa': true },
+        el('span', { class: 'row-name' }, document.createTextNode(name), badge),
+        rel.length > 1 ? el('span', { class: 'row-path', text: rel.slice(0, -1).join(' / ') }) : null,
+        el('span', { class: 'row-sub', text: meta })
+      );
+      const actions = el('div', { class: 'row-actions' });
+      if (!dir) actions.append(linkBtn('download', 'Скачати', 'btn-ghost', pathOf(segs), { iconOnly: true, download: name }));
+      else if (S.archiveAllowed && !(p.vault_locked && p.vault_open === false)) {
+        const zip = linkBtn('archive', 'Скачати папку (ZIP)', 'btn-ghost', dirHref(segs) + '?zip', { iconOnly: true, download: name + '.zip' });
+        if (!S.user) zip.addEventListener('click', e => checkZip(e, zip));   // readers: the proxy refuses folders with protected content
+        actions.append(zip);
+      }
+      if (dir && S.canWrite) actions.append(button('shield', 'Доступ: для всіх / прихована / пароль', 'btn-ghost', () => editAccess(segs, p), { iconOnly: true }));
+      if (S.canWrite && S.canDelete) actions.append(button('edit', 'Перейменувати / перемістити', 'btn-ghost', () => renameOrMove(segs, dir), { iconOnly: true }));
+      if (S.canDelete) actions.append(button('delete', 'Видалити', 'btn-ghost', () => removePath(segs, dir), { iconOnly: true }));
+
+      const row = el('div', { class: 'row' + (dir ? ' dir' : '') },
+        el('span', { class: 't-icon' }, typeIcon(t)),
+        main,
+        el('span', { class: 'row-meta', text: meta }),
+        actions
+      );
+      if (dir) row.dataset.drop = JSON.stringify(segs);
+      if (S.canWrite && S.canDelete) {
+        row.draggable = true;
+        row.addEventListener('dragstart', e => {
+          e.dataTransfer.setData(MOVE_TYPE, JSON.stringify({ segs, dir }));
+          e.dataTransfer.effectAllowed = 'move';
+          row.classList.add('dragging');
+        });
+        row.addEventListener('dragend', () => { row.classList.remove('dragging'); clearDrag(); });
+      }
+      return row;
+    }
+
+    function renderList() {
+      const list = $('list');
+      const q = $('search').value.trim().toLocaleLowerCase('uk');
+      let items;
+      if (S.loadFailed) {
+        list.replaceChildren(el('div', { class: 'empty', text: 'Не вдалося завантажити вміст папки' }));
+        return;
+      }
+      if (S.searchResults) items = S.searchResults;
+      else items = S.items.filter(p => !q || p.name.toLocaleLowerCase('uk').includes(q));
+      items = sortItems(items);
+      if (!items.length) {
+        list.replaceChildren(el('div', { class: 'empty',
+          text: q ? 'Нічого не знайдено' : (S.canWrite ? 'Папка порожня. Перетягніть файли сюди, вставте їх (Ctrl+V) або натисніть «Завантажити».' : 'Папка порожня') }));
+        return;
+      }
+      list.replaceChildren(...items.map(p => renderRow(p, S.segs)));
+    }
+
+    async function loadDir() {
+      const segs = S.segs;
+      S.searchResults = null;
+      try {
+        const data = await getJson(dirHref(segs) + '?json');
+        if (S.mode !== 'dir' || S.segs !== segs) return;
+        if (data.dir_exists === false && segs.length) return goNearestExisting(segs);
+        applyPerms(data);
+        S.items = (data.paths || []).filter(p => !p.name.startsWith('.'));
+        S.loadFailed = false;
+        markCurrentFolder(data.vault_self);
+      } catch (e) {
+        if (S.mode !== 'dir' || S.segs !== segs) return;
+        if (e.locked) return showUnlock($('list'), e.locked, () => { if (S.mode === 'dir' && S.segs === segs) loadDir(); });
+        if (/HTTP 404/.test(e.message) && segs.length) return goNearestExisting(segs);
+        console.error(e);
+        S.items = [];
+        S.loadFailed = true;
+      }
+      if (S.searchAllowed && $('search').value.trim() && $('deep').checked) runDeepSearch();
+      else renderList();
+    }
+
+    let searchTimer = null;
+    function onSearchInput() {
+      clearTimeout(searchTimer);
+      if (S.searchAllowed && $('deep').checked && $('search').value.trim()) {
+        searchTimer = setTimeout(runDeepSearch, 300);
+      } else {
+        S.searchResults = null;
+        renderList();
+      }
+    }
+    async function runDeepSearch() {
+      const q = $('search').value.trim();
+      if (!q) { S.searchResults = null; renderList(); return; }
+      const seq = ++S.searchSeq;
+      const segs = S.segs;
+      try {
+        const data = await getJson(dirHref(segs) + '?q=' + encodeURIComponent(q) + '&json');
+        if (seq !== S.searchSeq || S.segs !== segs) return;
+        S.searchResults = (data.paths || []).filter(p => !p.name.split('/').some(s => s.startsWith('.')));
+      } catch (e) {
+        if (seq !== S.searchSeq) return;
+        S.searchResults = null;
+        toast('Пошук не вдався');
+      }
+      renderList();
+    }
+
+    function showDir() {
+      document.title = (S.segs.length ? S.segs[S.segs.length - 1] + ' — ' : '') + 'Документація';
+      renderCrumbs(S.segs, false);
+      $('list').replaceChildren(el('div', { class: 'empty', text: 'Завантаження…' }));
+      loadDir();
+    }
+
+    /* ---------- hidden / password-protected folders ---------- */
+    // A folder's access is the marker file ".vault" inside it; the proxy (vault.js) enforces it.
+    //   {"hidden":true}  → only the editor sees it;  {"salt","hash"} → readers need the password
+    const VAULT_LOCK_URL = '/__vault/lock', VAULT_UNLOCK_URL = '/__vault/unlock';
+
+    function showUnlock(box, dir, done) {
+      const name = dir.split('/').filter(Boolean).pop() || dir;
+      const input = el('input', { class: 'txt-in', type: 'password', autocomplete: 'current-password', placeholder: 'Пароль', 'aria-label': 'Пароль' });
+      const msg = el('div', { class: 'unlock-msg', role: 'alert' });
+      const go = button('lock_open', 'Відкрити', 'btn-primary', null);
+      go.type = 'submit';
+      const form = el('form', { class: 'unlock-form', onsubmit: async e => {
+        e.preventDefault();
+        if (!input.value) { input.focus(); return; }
+        go.disabled = true;
+        msg.textContent = '';
+        try {
+          const r = await fetch(VAULT_UNLOCK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ path: dir, password: input.value }) });
+          if (r.ok) { done(); return; }
+          msg.textContent = r.status === 429 ? 'Забагато спроб. Зачекайте хвилину.'
+            : r.status === 403 ? 'Невірний пароль' : 'Не вдалося відкрити (статус ' + r.status + ')';
+        } catch (_) { msg.textContent = 'Немає з’єднання з сервером'; }
+        go.disabled = false;
+        input.select();
+      } }, input, go);
+      box.replaceChildren(el('div', { class: 'unlock' },
+        icon('lock'),
+        el('h2', { text: 'Папка «' + name + '» захищена паролем' }),
+        el('p', { text: 'Введіть пароль, щоб переглянути вміст.' }),
+        form, msg));
+      input.focus();
+    }
+
+    // badge on the current folder in the path bar
+    function markCurrentFolder(self) {
+      const cur = document.querySelector('#crumbs .cur');
+      if (!cur || !self || !S.segs.length) return;
+      if (self.hidden) cur.append(el('span', { class: 'row-badge hid', title: 'Прихована: бачить лише редактор' }, icon('visibility_off')));
+      else if (self.locked && S.user) cur.append(el('span', { class: 'row-badge', title: 'Захищена паролем' }, icon('lock')));
+      else if (self.locked) {
+        // reader inside an unlocked folder: click = forget the passwords on this device
+        cur.append(el('button', { class: 'row-badge', type: 'button', title: 'Відкрито паролем. Натисніть, щоб знову закрити на цьому пристрої',
+          onclick: async () => {
+            if (!confirm('Закрити захищені папки на цьому пристрої? Для перегляду знову знадобиться пароль.')) return;
+            await fetch(VAULT_LOCK_URL, { method: 'POST' }).catch(() => null);
+            loadDir();
+          } }, icon('lock_open')));
+      }
+    }
+
+    async function checkZip(e, a) {
+      e.preventDefault();
+      const r = await fetch(a.href, { method: 'HEAD', cache: 'no-store' }).catch(() => null);
+      if (r && r.ok) { location.href = a.href; return; }
+      toast(r && r.status === 403 ? 'Архів недоступний: у папці є захищений вміст' : 'Не вдалося скачати архів', 4000);
+    }
+
+    // SHA-256 hex (crypto.subtle only exists on https/localhost; plain-JS fallback for http on the LAN)
+    async function sha256Hex(str) {
+      const bytes = new TextEncoder().encode(str);
+      if (window.crypto && crypto.subtle && window.isSecureContext) {
+        const buf = await crypto.subtle.digest('SHA-256', bytes);
+        return Array.from(new Uint8Array(buf), b => b.toString(16).padStart(2, '0')).join('');
+      }
+      return sha256Js(bytes);
+    }
+    function sha256Js(bytes) {
+      const primes = [];
+      for (let n = 2; primes.length < 64; n++) if (primes.every(p => n % p)) primes.push(n);
+      const frac = x => (x - Math.floor(x)) * 4294967296 >>> 0;
+      const K = primes.map(p => frac(Math.cbrt(p)));
+      const H = primes.slice(0, 8).map(p => frac(Math.sqrt(p)));
+      const len = bytes.length, total = ((len + 9 + 63) >> 6) << 6;
+      const m = new Uint8Array(total);
+      m.set(bytes);
+      m[len] = 0x80;
+      const bits = len * 8;
+      const dv = new DataView(m.buffer);
+      dv.setUint32(total - 8, Math.floor(bits / 4294967296));
+      dv.setUint32(total - 4, bits >>> 0);
+      const w = new Uint32Array(64);
+      const rot = (x, n) => (x >>> n) | (x << (32 - n));
+      for (let off = 0; off < total; off += 64) {
+        for (let i = 0; i < 16; i++) w[i] = dv.getUint32(off + i * 4);
+        for (let i = 16; i < 64; i++) {
+          const s0 = rot(w[i - 15], 7) ^ rot(w[i - 15], 18) ^ (w[i - 15] >>> 3);
+          const s1 = rot(w[i - 2], 17) ^ rot(w[i - 2], 19) ^ (w[i - 2] >>> 10);
+          w[i] = (w[i - 16] + s0 + w[i - 7] + s1) >>> 0;
+        }
+        let [a, b, c, d, e, f, g, h] = H;
+        for (let i = 0; i < 64; i++) {
+          const t1 = (h + (rot(e, 6) ^ rot(e, 11) ^ rot(e, 25)) + ((e & f) ^ (~e & g)) + K[i] + w[i]) >>> 0;
+          const t2 = ((rot(a, 2) ^ rot(a, 13) ^ rot(a, 22)) + ((a & b) ^ (a & c) ^ (b & c))) >>> 0;
+          h = g; g = f; f = e; e = (d + t1) >>> 0; d = c; c = b; b = a; a = (t1 + t2) >>> 0;
+        }
+        [a, b, c, d, e, f, g, h].forEach((v, i) => { H[i] = (H[i] + v) >>> 0; });
+      }
+      return H.map(v => v.toString(16).padStart(8, '0')).join('');
+    }
+    const randomHex = n => Array.from(crypto.getRandomValues(new Uint8Array(n)), b => b.toString(16).padStart(2, '0')).join('');
+
+    function editAccess(segs, p) {
+      const name = segs[segs.length - 1];
+      const cur = p.vault_hidden ? 'hidden' : p.vault_locked ? 'password' : 'open';
+      const back = el('div', { class: 'modal-back' });
+      const close = () => { document.removeEventListener('keydown', onKey, true); back.remove(); };
+      const onKey = e => { if (e.key === 'Escape') { e.stopPropagation(); close(); } };
+      const opt = (val, ic, title, desc) => el('label', {},
+        el('input', { type: 'radio', name: 'acc', value: val, checked: val === cur, onchange: sync }),
+        icon(ic), el('span', {}, el('b', { text: title }), el('small', { text: desc })));
+      const pw = el('input', { class: 'txt-in', type: 'text', autocomplete: 'off', spellcheck: 'false', 'aria-label': 'Пароль',
+        placeholder: cur === 'password' ? 'Новий пароль (порожньо — залишити поточний)' : 'Пароль для читачів' });
+      const pwBox = el('div', { class: 'acc-pw' }, pw);
+      const err = el('div', { class: 'acc-err', role: 'alert' });
+      function sync() {
+        const v = back.querySelector('input[name=acc]:checked').value;
+        pwBox.classList.toggle('hidden', v !== 'password');
+        if (v === 'password') pw.focus();
+      }
+      const save = async () => {
+        const v = back.querySelector('input[name=acc]:checked').value;
+        const url = pathOf(segs.concat('.vault'));
+        let res;
+        err.textContent = '';
+        if (v === 'open') {
+          if (cur === 'open') return close();
+          res = await fetch(url, { method: 'DELETE' }).catch(() => null);
+          if (res && res.status === 404) res = { ok: true };
+        } else if (v === 'hidden') {
+          res = await fetch(url, { method: 'PUT', body: JSON.stringify({ hidden: true }) + '\n' }).catch(() => null);
+        } else {
+          const pass = pw.value;
+          if (!pass && cur === 'password') return close();
+          if (pass.length < 4) { err.textContent = 'Пароль — щонайменше 4 символи'; pw.focus(); return; }
+          const salt = randomHex(16);
+          res = await fetch(url, { method: 'PUT', body: JSON.stringify({ salt, hash: await sha256Hex(salt + pass) }) + '\n' }).catch(() => null);
+        }
+        if (!res || !res.ok) { err.textContent = 'Не вдалося зберегти' + (res && res.status ? ' (статус ' + res.status + ')' : ''); return; }
+        close();
+        toast(v === 'open' ? 'Папка відкрита для всіх' : v === 'hidden' ? 'Папку приховано від читачів' : 'Пароль встановлено');
+        if (S.mode === 'dir') loadDir();
+      };
+      const box = el('div', { class: 'modal', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'acc-h' },
+        el('h2', { id: 'acc-h', text: 'Доступ до папки «' + name + '»' }),
+        el('div', { class: 'acc-opts' },
+          opt('open', 'visibility', 'Для всіх', 'Читачі бачать і відкривають папку без входу.'),
+          opt('hidden', 'visibility_off', 'Прихована', 'Бачить лише редактор. Для читачів папки не існує.'),
+          opt('password', 'lock', 'З паролем', 'Читачі бачать папку, але відкривають її лише після введення пароля.')),
+        pwBox, err,
+        el('p', { text: 'Діє на всі вкладені папки й файли. Налаштування переїжджає разом з папкою при перейменуванні.' }),
+        el('div', { class: 'choices' },
+          button('save', 'Зберегти', 'btn-primary', save),
+          button('close', 'Скасувати', 'btn-soft', close)));
+      back.append(box);
+      back.addEventListener('click', e => { if (e.target === back) close(); });
+      pw.addEventListener('keydown', e => { if (e.key === 'Enter') save(); });
+      document.addEventListener('keydown', onKey, true);
+      document.body.append(back);
+      pwBox.classList.toggle('hidden', cur !== 'password');
+      box.querySelector('input[name=acc]:checked').focus();
+    }
+
+    /* ---------- create / rename / delete ---------- */
+    async function makeFolder() {
+      const name = (prompt('Назва нової папки:') || '').trim();
+      if (!name) return;
+      if (badName(name)) { alert('Назва не може містити / або \\'); return; }
+      const res = await fetch(pathOf(S.segs.concat(name)), { method: 'MKCOL' }).catch(() => null);
+      if (res && res.ok) { toast('Папку створено'); loadDir(); }
+      else alert('Не вдалося створити папку (можливо, вже існує)');
+    }
+
+    async function exists(segs) {
+      const res = await fetch(pathOf(segs), { method: 'HEAD', cache: 'no-store' }).catch(() => null);
+      return !!(res && res.ok);
+    }
+
+    async function newNote() {
+      let name = (prompt('Назва нового файлу (.md — розмітка, .txt — простий текст):', 'нотатка.md') || '').trim();
+      if (!name) return;
+      if (badName(name)) { alert('Назва не може містити / або \\'); return; }
+      if (!extOf(name)) name += '.md';
+      const segs = S.segs.concat(name);
+      if (await exists(segs)) { alert('Файл з такою назвою вже існує'); return; }
+      const body = extOf(name) === 'md' ? '# ' + name.replace(/\.[^.]+$/, '') + '\n\n' : '';
+      const res = await fetch(pathOf(segs), { method: 'PUT', body }).catch(() => null);
+      if (res && res.ok) navigate(editHref(segs));
+      else alert('Не вдалося створити файл');
+    }
+
+    async function renameOrMove(segs, dir) {
+      const oldRel = segs.join('/');
+      const input = prompt('Нова назва або шлях від кореня (наприклад «Інструкції/Монтаж/файл.pdf»):', oldRel);
+      if (input == null) return;
+      const newSegs = input.split('/').map(s => s.trim()).filter(Boolean);
+      if (!newSegs.length || newSegs.some(s => s === '.' || s === '..' || s.includes('\\'))) { alert('Некоректний шлях'); return; }
+      if (newSegs.join('/') === oldRel) return;
+      if (dir && newSegs.join('/').startsWith(oldRel + '/')) { alert('Не можна перемістити папку всередину себе'); return; }
+      if (await exists(newSegs)) { alert('За цим шляхом уже щось є'); return; }
+      // ensure parent folders exist
+      for (let i = 1; i < newSegs.length; i++) {
+        const parent = newSegs.slice(0, i);
+        if (!(await exists(parent))) {
+          const r = await fetch(pathOf(parent), { method: 'MKCOL' }).catch(() => null);
+          if (!r || !r.ok) { alert('Не вдалося створити папку ' + parent.join('/')); return; }
+        }
+      }
+      const res = await fetch(pathOf(segs), { method: 'MOVE', headers: { 'Destination': location.origin + pathOf(newSegs) } }).catch(() => null);
+      if (!res || !res.ok) { alert('Не вдалося перейменувати' + (res ? ' (статус ' + res.status + ')' : '')); return; }
+      toast('Готово');
+      if (S.mode === 'dir') {
+        // renamed the folder we're in (or a parent)? go to new location
+        const cur = S.segs.join('/');
+        if (dir && (cur === oldRel || cur.startsWith(oldRel + '/'))) {
+          navigate(dirHref(newSegs.concat(S.segs.slice(segs.length))), true);
+        } else loadDir();
+      } else {
+        navigate(dir ? dirHref(newSegs) : viewHref(newSegs), true);
+      }
+    }
+
+    async function removePath(segs, dir) {
+      const name = segs[segs.length - 1];
+      const msg = dir ? 'Видалити папку «' + name + '» разом з усім вмістом?' : 'Видалити файл «' + name + '»?';
+      if (!confirm(msg)) return;
+      const res = await fetch(pathOf(segs) + (dir ? '/' : ''), { method: 'DELETE' }).catch(() => null);
+      if (!res || !res.ok) { alert('Не вдалося видалити' + (res ? ' (статус ' + res.status + ')' : '')); return; }
+      toast('Видалено');
+      loadDisk();
+      if (S.mode === 'dir') {
+        const cur = S.segs.join('/'), rel = segs.join('/');
+        if (dir && (cur === rel || cur.startsWith(rel + '/'))) navigate(dirHref(segs.slice(0, -1)), true);
+        else loadDir();
+      } else {
+        navigate(dirHref(segs.slice(0, -1)), true);
+      }
+    }
+
+    /* ---------- markdown ---------- */
+    function safeUrl(u) {
+      const s = u.replace(/&amp;/g, '&').trim();
+      if (/^(javascript|vbscript|data):/i.test(s.replace(/[\s\u0000-\u001f]/g, ''))) return '#';
+      return escapeHtml(s);
+    }
+    function mdInline(text) {
+      const codes = [];
+      let s = text.replace(/`([^`]+)`/g, (_, c) => { codes.push(c); return '\u0000' + (codes.length - 1) + '\u0000'; });
+      s = escapeHtml(s);
+      s = s.replace(/!\[([^\]]*)\]\(([^)\s]+)(?:\s+&quot;[^&]*&quot;)?\)/g, (_, alt, u) => '<img alt="' + alt + '" src="' + safeUrl(u) + '" loading="lazy">');
+      s = s.replace(/\[([^\]]+)\]\(([^)\s]+)(?:\s+&quot;[^&]*&quot;)?\)/g, (_, t, u) => '<a href="' + safeUrl(u) + '">' + t + '</a>');
+      s = s.replace(/(^|[\s(])(https?:\/\/[^\s<)]*[^\s<).,;:!?])/g, (_, pre, u) => pre + '<a href="' + safeUrl(u) + '" target="_blank" rel="noopener">' + u + '</a>');
+      s = s.replace(/\*\*(?=\S)([\s\S]*?\S)\*\*/g, '<strong>$1</strong>').replace(/__(?=\S)([\s\S]*?\S)__/g, '<strong>$1</strong>');
+      s = s.replace(/(^|[^*\w])\*(?=\S)([^*]*?\S)\*(?!\*)/g, '$1<em>$2</em>').replace(/(^|[^_\w])_(?=\S)([^_]*?\S)_(?![_\w])/g, '$1<em>$2</em>');
+      s = s.replace(/~~(?=\S)([\s\S]*?\S)~~/g, '<del>$1</del>');
+      s = s.replace(/ {2,}\n|\\\n/g, '<br>');
+      return s.replace(/\u0000(\d+)\u0000/g, (_, i) => '<code>' + escapeHtml(codes[i]) + '</code>');
+    }
+    function splitRow(line) {
+      let l = line.trim();
+      if (l.startsWith('|')) l = l.slice(1);
+      if (l.endsWith('|') && !l.endsWith('\\|')) l = l.slice(0, -1);
+      const cells = [];
+      let cur = '';
+      for (let k = 0; k < l.length; k++) {
+        if (l[k] === '\\' && l[k + 1] === '|') { cur += '|'; k++; }
+        else if (l[k] === '|') { cells.push(cur.trim()); cur = ''; }
+        else cur += l[k];
+      }
+      cells.push(cur.trim());
+      return cells;
+    }
+    const RE_LIST = /^(\s*)([-*+]|\d+[.)])\s+(.*)$/;
+    const RE_HR = /^\s{0,3}([-*_])(\s*\1){2,}\s*$/;
+    const RE_TSEP = /^\s*\|?\s*:?-{1,}:?\s*(\|\s*:?-{1,}:?\s*)*\|?\s*$/;
+    function md(src) {
+      const lines = src.replace(/\r\n?/g, '\n').split('\n');
+      const out = [];
+      let i = 0;
+      const isBlockStart = (l, next) => /^\s*```|^\s*~~~/.test(l) || /^#{1,6}\s/.test(l) || /^\s*>/.test(l)
+        || RE_LIST.test(l) || RE_HR.test(l) || (l.includes('|') && next != null && RE_TSEP.test(next));
+      while (i < lines.length) {
+        const line = lines[i];
+        if (!line.trim()) { i++; continue; }
+        let m;
+        if ((m = line.match(/^\s*(```|~~~)\s*([\w+-]*)/))) {
+          const fence = m[1], buf = [];
+          i++;
+          while (i < lines.length && !lines[i].trim().startsWith(fence)) buf.push(lines[i++]);
+          i++;
+          out.push('<pre><code>' + escapeHtml(buf.join('\n')) + '</code></pre>');
+          continue;
+        }
+        if ((m = line.match(/^(#{1,6})\s+(.*?)\s*#*\s*$/))) {
+          const n = m[1].length;
+          out.push('<h' + n + '>' + mdInline(m[2]) + '</h' + n + '>');
+          i++; continue;
+        }
+        if (RE_HR.test(line)) { out.push('<hr>'); i++; continue; }
+        if (/^\s*>/.test(line)) {
+          const buf = [];
+          while (i < lines.length && lines[i].trim() && /^\s*>/.test(lines[i])) buf.push(lines[i++].replace(/^\s*>\s?/, ''));
+          out.push('<blockquote>' + md(buf.join('\n')) + '</blockquote>');
+          continue;
+        }
+        if (line.includes('|') && i + 1 < lines.length && RE_TSEP.test(lines[i + 1])) {
+          const head = splitRow(line);
+          const aligns = splitRow(lines[i + 1]).map(c => /^:-+:$/.test(c) ? 'center' : /-:$/.test(c) ? 'right' : '');
+          i += 2;
+          const rows = [];
+          while (i < lines.length && lines[i].trim() && lines[i].includes('|')) rows.push(splitRow(lines[i++]));
+          const cell = (tag, c, j) => '<' + tag + (aligns[j] ? ' style="text-align:' + aligns[j] + '"' : '') + '>' + mdInline(c || '') + '</' + tag + '>';
+          out.push('<div class="tbl"><table><thead><tr>' + head.map((c, j) => cell('th', c, j)).join('') + '</tr></thead><tbody>'
+            + rows.map(r => '<tr>' + head.map((_, j) => cell('td', r[j], j)).join('') + '</tr>').join('') + '</tbody></table></div>');
+          continue;
+        }
+        if (RE_LIST.test(line)) {
+          // nested lists by indentation
+          const stack = [];
+          let html = '';
+          while (i < lines.length) {
+            const l = lines[i];
+            const lm = l.match(RE_LIST);
+            if (!lm) {
+              if (l.trim() && /^\s{2,}/.test(l) && stack.length) { html += ' ' + mdInline(l.trim()); i++; continue; }
+              break;
+            }
+            const indent = lm[1].replace(/\t/g, '    ').length;
+            const ordered = /\d/.test(lm[2]);
+            while (stack.length && indent < stack[stack.length - 1].indent) { html += '</li></' + stack.pop().tag + '>'; }
+            // same level but list type changed (bullets -> numbers): start a new list
+            if (stack.length && indent === stack[stack.length - 1].indent && stack[stack.length - 1].tag !== (ordered ? 'ol' : 'ul')) {
+              html += '</li></' + stack.pop().tag + '>';
+            }
+            const top = stack[stack.length - 1];
+            if (!top || indent > top.indent) {
+              const tag = ordered ? 'ol' : 'ul';
+              stack.push({ indent, tag });
+              html += '<' + tag + (ordered && parseInt(lm[2], 10) !== 1 ? ' start="' + parseInt(lm[2], 10) + '"' : '') + '>';
+            } else {
+              html += '</li>';
+            }
+            let body = lm[3];
+            const task = body.match(/^\[([ xX])\]\s+(.*)$/);
+            if (task) html += '<li class="task"><input type="checkbox" disabled' + (task[1] !== ' ' ? ' checked' : '') + '>' + mdInline(task[2]);
+            else html += '<li>' + mdInline(body);
+            i++;
+          }
+          while (stack.length) html += '</li></' + stack.pop().tag + '>';
+          out.push(html);
+          continue;
+        }
+        const buf = [];
+        while (i < lines.length && lines[i].trim() && !(buf.length && isBlockStart(lines[i], lines[i + 1]))) buf.push(lines[i++]);
+        out.push('<p>' + mdInline(buf.join('\n')) + '</p>');
+      }
+      return out.join('\n');
+    }
+
+    /* ---------- csv ---------- */
+    function parseCsv(text, delim) {
+      const rows = [];
+      let row = [], field = '', q = false;
+      for (let i = 0; i < text.length; i++) {
+        const c = text[i];
+        if (q) {
+          if (c === '"') { if (text[i + 1] === '"') { field += '"'; i++; } else q = false; }
+          else field += c;
+        } else if (c === '"' && field === '') q = true;
+        else if (c === delim) { row.push(field); field = ''; }
+        else if (c === '\n' || c === '\r') {
+          if (c === '\r' && text[i + 1] === '\n') i++;
+          row.push(field); rows.push(row); row = []; field = '';
+          if (rows.length > CSV_MAX_ROWS) break;
+        } else field += c;
+      }
+      if (field || row.length) { row.push(field); rows.push(row); }
+      return rows;
+    }
+    function detectDelim(text, ext) {
+      if (ext === 'tsv') return '\t';
+      const first = text.split('\n', 1)[0];
+      const counts = [';', ',', '\t'].map(d => [d, first.split(d).length]);
+      counts.sort((a, b) => b[1] - a[1]);
+      return counts[0][1] > 1 ? counts[0][0] : ',';
+    }
+
+    /* ---------- office: docx / xlsx (built-in reader, no external libraries) ---------- */
+    // .docx / .xlsx are ZIP archives of XML. Unzip with the browser's DecompressionStream,
+    // parse XML with DOMParser, build DOM nodes (never innerHTML from document content).
+    const OFFICE_MAX = 50 * 1024 * 1024;
+    const XL_MAX_ROWS = 2000, XL_MAX_COLS = 100;
+    let blobUrls = [];
+    function revokeBlobs() { blobUrls.forEach(u => URL.revokeObjectURL(u)); blobUrls = []; }
+
+    async function unzip(buf) {
+      if (typeof DecompressionStream === 'undefined') throw new Error('браузер застарий для перегляду документів');
+      const dv = new DataView(buf), u8 = new Uint8Array(buf);
+      let eocd = -1;
+      for (let i = buf.byteLength - 22; i >= Math.max(0, buf.byteLength - 65557); i--) {
+        if (dv.getUint32(i, true) === 0x06054b50) { eocd = i; break; }
+      }
+      if (eocd < 0) throw new Error('файл пошкоджений або це не формат Office 2007+');
+      const count = dv.getUint16(eocd + 10, true);
+      let p = dv.getUint32(eocd + 16, true);
+      const entries = new Map(), dec = new TextDecoder();
+      for (let k = 0; k < count && dv.getUint32(p, true) === 0x02014b50; k++) {
+        const nlen = dv.getUint16(p + 28, true), xlen = dv.getUint16(p + 30, true), clen = dv.getUint16(p + 32, true);
+        entries.set(dec.decode(u8.subarray(p + 46, p + 46 + nlen)),
+          { method: dv.getUint16(p + 10, true), csize: dv.getUint32(p + 20, true), lho: dv.getUint32(p + 42, true) });
+        p += 46 + nlen + xlen + clen;
+      }
+      const zip = {
+        async bytes(name) {
+          const e = entries.get(name);
+          if (!e) return null;
+          const start = e.lho + 30 + dv.getUint16(e.lho + 26, true) + dv.getUint16(e.lho + 28, true);
+          const data = u8.subarray(start, start + e.csize);
+          if (e.method === 0) return data.slice();
+          if (e.method !== 8) throw new Error('непідтримуване стиснення');
+          const out = await new Response(new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer();
+          return new Uint8Array(out);
+        },
+        async xml(name) {
+          const b = await zip.bytes(name);
+          if (!b) return null;
+          const x = new DOMParser().parseFromString(new TextDecoder().decode(b), 'application/xml');
+          if (x.getElementsByTagName('parsererror').length) throw new Error('пошкоджений XML: ' + name);
+          return x;
+        }
+      };
+      return zip;
+    }
+
+    // namespace-agnostic XML helpers (match by local name)
+    const xKids = (n, name) => n ? Array.from(n.children).filter(c => c.localName === name) : [];
+    const xKid = (n, name) => n ? Array.from(n.children).find(c => c.localName === name) || null : null;
+    const xDesc = (n, name) => n ? Array.from(n.getElementsByTagNameNS('*', name)) : [];
+    function xAttr(n, name) {
+      if (!n) return null;
+      for (const a of n.attributes) if (a.localName === name) return a.value;
+      return null;
+    }
+    function zipPath(base, target) {
+      if (target.startsWith('/')) return target.slice(1);
+      const parts = base ? base.split('/') : [];
+      for (const s of target.split('/')) { if (s === '..') parts.pop(); else if (s && s !== '.') parts.push(s); }
+      return parts.join('/');
+    }
+    function readRels(xml, base) {
+      const m = new Map();
+      if (!xml) return m;
+      for (const r of xDesc(xml.documentElement, 'Relationship')) {
+        const ext = r.getAttribute('TargetMode') === 'External';
+        const t = r.getAttribute('Target') || '';
+        m.set(r.getAttribute('Id'), { external: ext, target: ext ? t : zipPath(base, t) });
+      }
+      return m;
+    }
+    const IMG_MIME = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', gif: 'image/gif', bmp: 'image/bmp',
+      webp: 'image/webp', svg: 'image/svg+xml', tif: 'image/tiff', tiff: 'image/tiff' };
+
+    /* --- docx --- */
+    async function buildDocx(buf) {
+      const zip = await unzip(buf);
+      const doc = await zip.xml('word/document.xml');
+      if (!doc) throw new Error('це не документ Word');
+      const rels = readRels(await zip.xml('word/_rels/document.xml.rels'), 'word');
+
+      const styles = new Map();
+      const sx = await zip.xml('word/styles.xml');
+      if (sx) for (const s of xDesc(sx.documentElement, 'style')) {
+        styles.set(xAttr(s, 'styleId'), { name: (xAttr(xKid(s, 'name'), 'val') || '').toLowerCase(), based: xAttr(xKid(s, 'basedOn'), 'val') });
+      }
+      function headingLevel(id) {
+        for (let k = 0, cur = id; cur && k < 6; k++) {
+          const s = styles.get(cur);
+          const m = /^heading\s*(\d)/i.exec(s ? s.name : cur);
+          if (m) return +m[1];
+          if (s && s.name === 'title') return 1;
+          if (s && s.name === 'subtitle') return 2;
+          cur = s && s.based;
+        }
+        return 0;
+      }
+
+      const numFmt = new Map();   // numId -> { ilvl: 'bullet' | 'decimal' | ... }
+      const nx = await zip.xml('word/numbering.xml');
+      if (nx) {
+        const abs = new Map();
+        for (const a of xKids(nx.documentElement, 'abstractNum')) {
+          const lv = {};
+          for (const l of xKids(a, 'lvl')) lv[xAttr(l, 'ilvl')] = xAttr(xKid(l, 'numFmt'), 'val');
+          abs.set(xAttr(a, 'abstractNumId'), lv);
+        }
+        for (const n of xKids(nx.documentElement, 'num')) numFmt.set(xAttr(n, 'numId'), abs.get(xAttr(xKid(n, 'abstractNumId'), 'val')) || {});
+      }
+
+      const pending = [];
+      const on = (rPr, name) => {
+        const e = xKid(rPr, name);
+        if (!e) return false;
+        const v = xAttr(e, 'val');
+        return v == null || !/^(0|false|off|none)$/i.test(v);
+      };
+
+      function image(id, holder) {
+        const r = id && rels.get(id);
+        if (!r || r.external) return null;
+        const ext = extOf(r.target), mime = IMG_MIME[ext];
+        if (!mime) return el('span', { class: 'docx-noimg', text: '[зображення ' + ext.toUpperCase() + ']' });
+        const img = el('img', { alt: '' });
+        const extent = xDesc(holder, 'extent')[0];
+        const cx = extent && Number(extent.getAttribute('cx'));
+        if (cx) img.style.width = Math.round(cx / 9525) + 'px';
+        pending.push(zip.bytes(r.target).then(b => {
+          if (!b) return;
+          const u = URL.createObjectURL(new Blob([b], { type: mime }));
+          blobUrls.push(u);
+          img.src = u;
+        }).catch(() => {}));
+        return img;
+      }
+
+      function run(r) {
+        const rPr = xKid(r, 'rPr'), nodes = [];
+        let text = '';
+        const flush = () => { if (text) { nodes.push(document.createTextNode(text)); text = ''; } };
+        for (const c of r.children) {
+          switch (c.localName) {
+            case 't': text += c.textContent; break;
+            case 'tab': text += '\t'; break;
+            case 'noBreakHyphen': text += '‑'; break;
+            case 'br': case 'cr': flush(); nodes.push(xAttr(c, 'type') === 'page' ? el('hr', { class: 'pb' }) : el('br')); break;
+            case 'drawing': case 'pict': case 'object':
+              flush();
+              for (const b of xDesc(c, 'blip').concat(xDesc(c, 'imagedata'))) {
+                const img = image(xAttr(b, 'embed') || xAttr(b, 'id'), c);
+                if (img) nodes.push(img);
+              }
+              break;
+          }
+        }
+        flush();
+        if (!nodes.length) return [];
+        const tags = [];
+        if (on(rPr, 'b')) tags.push('strong');
+        if (on(rPr, 'i')) tags.push('em');
+        if (on(rPr, 'u')) tags.push('u');
+        if (on(rPr, 'strike') || on(rPr, 'dstrike')) tags.push('s');
+        const va = xAttr(xKid(rPr, 'vertAlign'), 'val');
+        if (va === 'superscript') tags.push('sup'); else if (va === 'subscript') tags.push('sub');
+        if (!tags.length) return nodes;
+        const outer = el(tags[0]);
+        let inner = outer;
+        for (const t of tags.slice(1)) { const e = el(t); inner.append(e); inner = e; }
+        inner.append(...nodes);
+        return [outer];
+      }
+
+      function inline(node, out) {
+        for (const c of node.children) {
+          switch (c.localName) {
+            case 'r': out.append(...run(c)); break;
+            case 'hyperlink': {
+              const r = rels.get(xAttr(c, 'id'));
+              if (r && r.external && /^(https?:|mailto:)/i.test(r.target)) {
+                const a = el('a', { href: r.target, target: '_blank', rel: 'noopener' });
+                inline(c, a);
+                out.append(a);
+              } else inline(c, out);
+              break;
+            }
+            case 'ins': case 'smartTag': case 'sdt': case 'sdtContent': case 'customXml': case 'fldSimple':
+              inline(c, out); break;
+          }
+        }
+      }
+
+      function table(tbl) {
+        const t = el('table');
+        for (const tr of xKids(tbl, 'tr')) {
+          const row = el('tr');
+          for (const tc of xKids(tr, 'tc')) {
+            const tcPr = xKid(tc, 'tcPr');
+            const span = Number(xAttr(xKid(tcPr, 'gridSpan'), 'val')) || 1;
+            const vm = xKid(tcPr, 'vMerge');
+            const td = el('td', { colspan: span > 1 ? span : null });
+            if (vm && xAttr(vm, 'val') !== 'restart') td.className = 'vm';   // continuation of a vertically merged cell
+            else blocks(tc, td);
+            row.append(td);
+          }
+          t.append(row);
+        }
+        return el('div', { class: 'tbl' }, t);
+      }
+
+      function blocks(node, out) {
+        let list = null;
+        for (const c of node.children) {
+          const n = c.localName;
+          if (n === 'p') {
+            const pPr = xKid(c, 'pPr'), numPr = xKid(pPr, 'numPr');
+            const numId = xAttr(xKid(numPr, 'numId'), 'val');
+            if (numPr && numId && numId !== '0') {
+              const ilvl = Number(xAttr(xKid(numPr, 'ilvl'), 'val')) || 0;
+              const fmt = (numFmt.get(numId) || {})[ilvl] || 'bullet';
+              const tag = fmt === 'bullet' ? 'ul' : 'ol';
+              if (!list || list.numId !== numId || list.tag !== tag) { list = { numId, tag, el: el(tag) }; out.append(list.el); }
+              const li = el('li');
+              if (ilvl) li.style.marginLeft = (ilvl * 1.5) + 'em';
+              if (tag === 'ol' && /letter/i.test(fmt)) li.style.listStyleType = /upper/i.test(fmt) ? 'upper-alpha' : 'lower-alpha';
+              if (tag === 'ol' && /roman/i.test(fmt)) li.style.listStyleType = /upper/i.test(fmt) ? 'upper-roman' : 'lower-roman';
+              inline(c, li);
+              list.el.append(li);
+              continue;
+            }
+            list = null;
+            const lvl = headingLevel(xAttr(xKid(pPr, 'pStyle'), 'val'));
+            const p = el(lvl ? 'h' + Math.min(lvl, 6) : 'p');
+            const jc = xAttr(xKid(pPr, 'jc'), 'val');
+            if (jc === 'center' || jc === 'right') p.style.textAlign = jc;
+            else if (jc === 'both' || jc === 'distribute') p.style.textAlign = 'justify';
+            inline(c, p);
+            if (!p.childNodes.length) p.append(el('br'));   // empty paragraph = vertical spacing in Word
+            out.append(p);
+          } else if (n === 'tbl') { list = null; out.append(table(c)); }
+          else if (n === 'sdt') { list = null; blocks(xKid(c, 'sdtContent') || c, out); }
+          else if (n === 'customXml' || n === 'ins') blocks(c, out);
+        }
+      }
+
+      const page = el('div', { class: 'docx-page' });
+      blocks(xKid(doc.documentElement, 'body'), page);
+      await Promise.all(pending);
+      return page;
+    }
+
+    /* --- xlsx --- */
+    const colIndex = ref => { let n = 0; for (const ch of ref.toUpperCase()) { const c = ch.charCodeAt(0); if (c < 65 || c > 90) break; n = n * 26 + c - 64; } return n; };
+    const rowIndex = ref => Number((/\d+/.exec(ref) || ['0'])[0]);
+    const colName = n => { let s = ''; while (n > 0) { const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); } return s; };
+
+    function numFmtKind(id, code) {
+      if (code == null) {
+        if (id === 22) return 'datetime';
+        if ((id >= 14 && id <= 17) || (id >= 27 && id <= 36) || (id >= 50 && id <= 58)) return 'date';
+        if ((id >= 18 && id <= 21) || (id >= 45 && id <= 47)) return 'time';
+        if (id === 9 || id === 10) return 'pct';
+        return '';
+      }
+      const c = code.split(';')[0].replace(/"[^"]*"|\[[^\]]*\]|\\./g, '');
+      if (/%/.test(c)) return 'pct';
+      const d = /[dy]/i.test(c), t = /[hs]/i.test(c);
+      return d && t ? 'datetime' : d ? 'date' : t ? 'time' : '';
+    }
+    const fmtNum = n => (+n.toPrecision(15)).toLocaleString('uk-UA', { maximumFractionDigits: 10 });
+
+    // shared spreadsheet rendering (xlsx + ods): grid = Map('r:c' -> { text, num }), merges = [{ r1, c1, r2, c2 }]
+    function gridView(grid, merges, maxR, maxC, truncated) {
+      if (!maxR) return el('div', { class: 'empty', text: 'Аркуш порожній' });
+      const spans = new Map(), covered = new Set();
+      for (const m of merges) {
+        const r2 = Math.min(m.r2, maxR), c2 = Math.min(m.c2, maxC);
+        if (m.r1 > maxR || m.c1 > maxC || r2 < m.r1 || c2 < m.c1) continue;
+        spans.set(m.r1 + ':' + m.c1, { rs: r2 - m.r1 + 1, cs: c2 - m.c1 + 1 });
+        for (let i = m.r1; i <= r2; i++) for (let j = m.c1; j <= c2; j++) if (i !== m.r1 || j !== m.c1) covered.add(i + ':' + j);
+      }
+      const head = el('tr', {}, el('th', { class: 'col', text: '' }));
+      for (let j = 1; j <= maxC; j++) head.append(el('th', { class: 'col', text: colName(j) }));
+      const body = el('tbody');
+      for (let i = 1; i <= maxR; i++) {
+        const tr = el('tr', {}, el('td', { class: 'n', text: String(i) }));
+        for (let j = 1; j <= maxC; j++) {
+          const key = i + ':' + j;
+          if (covered.has(key)) continue;
+          const v = grid.get(key), sp = spans.get(key);
+          tr.append(el('td', { class: v && v.num ? 'num' : null, rowspan: sp && sp.rs > 1 ? sp.rs : null,
+            colspan: sp && sp.cs > 1 ? sp.cs : null, text: v ? v.text : '' }));
+        }
+        body.append(tr);
+      }
+      const box = el('div', { class: 'csv xl' }, el('table', {}, el('thead', {}, head), body));
+      if (!truncated) return box;
+      return el('div', {}, box, el('p', { class: 'note', style: 'padding:0 12px 10px',
+        text: 'Показано перші ' + XL_MAX_ROWS + ' рядків і ' + XL_MAX_COLS + ' стовпців. Повністю — у скачаному файлі.' }));
+    }
+
+    async function sheetTabs(sheets, viewOf) {
+      if (!sheets.length) throw new Error('у книзі немає аркушів');
+      const holder = el('div');
+      const tabs = el('div', { class: 'sheet-tabs', role: 'tablist' });
+      const show = async i => {
+        tabs.querySelectorAll('button').forEach((b, k) => { b.classList.toggle('on', k === i); b.setAttribute('aria-selected', String(k === i)); });
+        holder.replaceChildren(el('div', { class: 'empty', text: 'Завантаження…' }));
+        try { holder.replaceChildren(await viewOf(sheets[i])); }
+        catch (e) { holder.replaceChildren(el('div', { class: 'empty', text: 'Не вдалося прочитати аркуш: ' + e.message })); }
+      };
+      sheets.forEach((sh, i) => tabs.append(el('button', { type: 'button', role: 'tab', text: sh.name, onclick: () => show(i) })));
+      await show(0);
+      return sheets.length > 1 ? el('div', {}, tabs, holder) : holder;
+    }
+
+    async function buildXlsx(buf) {
+      const zip = await unzip(buf);
+      const wb = await zip.xml('xl/workbook.xml');
+      if (!wb) throw new Error('це не книга Excel');
+      const rels = readRels(await zip.xml('xl/_rels/workbook.xml.rels'), 'xl');
+      const d1904 = xAttr(xDesc(wb.documentElement, 'workbookPr')[0], 'date1904');
+      const is1904 = d1904 === '1' || d1904 === 'true';
+
+      const shared = [];
+      const ss = await zip.xml('xl/sharedStrings.xml');
+      if (ss) for (const si of xKids(ss.documentElement, 'si')) {
+        shared.push(xDesc(si, 't').filter(t => t.parentNode.localName !== 'rPh').map(t => t.textContent).join(''));
+      }
+
+      const kinds = [];
+      const sx = await zip.xml('xl/styles.xml');
+      if (sx) {
+        const custom = new Map();
+        for (const nf of xDesc(sx.documentElement, 'numFmt')) custom.set(xAttr(nf, 'numFmtId'), xAttr(nf, 'formatCode') || '');
+        for (const xf of xKids(xDesc(sx.documentElement, 'cellXfs')[0], 'xf')) {
+          const id = xAttr(xf, 'numFmtId') || '0';
+          kinds.push(numFmtKind(Number(id), custom.has(id) ? custom.get(id) : null));
+        }
+      }
+      const toDate = v => new Date(Math.round((v + (is1904 ? 1462 : 0) - 25569) * 86400000));
+      function fmtDate(v, kind) {
+        const d = toDate(v), o = { timeZone: 'UTC' };
+        if (kind === 'time') return d.toLocaleTimeString('uk-UA', { ...o, hour: '2-digit', minute: '2-digit' });
+        if (kind === 'date' || Number.isInteger(v)) return d.toLocaleDateString('uk-UA', o);
+        return d.toLocaleString('uk-UA', { ...o, dateStyle: 'short', timeStyle: 'short' });
+      }
+      function cellValue(c) {
+        const t = xAttr(c, 't'), v = xKid(c, 'v'), raw = v ? v.textContent : '';
+        if (t === 's') return { text: shared[Number(raw)] || '' };
+        if (t === 'inlineStr') return { text: xDesc(xKid(c, 'is'), 't').map(x => x.textContent).join('') };
+        if (t === 'str' || t === 'e' || t === 'd') return { text: raw };
+        if (t === 'b') return { text: raw === '1' ? 'TRUE' : 'FALSE' };
+        if (raw === '') return { text: '' };
+        const n = Number(raw);
+        if (!isFinite(n)) return { text: raw };
+        const kind = kinds[Number(xAttr(c, 's')) || 0] || '';
+        if (kind === 'date' || kind === 'datetime' || kind === 'time') return { text: fmtDate(n, kind), num: true };
+        if (kind === 'pct') return { text: fmtNum(n * 100) + '%', num: true };
+        return { text: fmtNum(n), num: true };
+      }
+
+      async function sheetView(path) {
+        const x = path && await zip.xml(path);
+        if (!x) return el('div', { class: 'empty', text: 'Цей аркуш не містить таблиці (можливо, діаграма).' });
+        const grid = new Map();
+        let maxR = 0, maxC = 0, truncated = false, r = 0;
+        for (const row of xDesc(x.documentElement, 'row')) {
+          r = Number(xAttr(row, 'r')) || r + 1;
+          if (r > XL_MAX_ROWS) { truncated = true; break; }
+          let c = 0;
+          for (const cell of xKids(row, 'c')) {
+            const ref = xAttr(cell, 'r');
+            c = ref ? colIndex(ref) : c + 1;
+            if (c > XL_MAX_COLS) { truncated = true; continue; }
+            const val = cellValue(cell);
+            if (val.text === '') continue;
+            grid.set(r + ':' + c, val);
+            if (r > maxR) maxR = r;
+            if (c > maxC) maxC = c;
+          }
+        }
+        const merges = [];
+        for (const m of xDesc(x.documentElement, 'mergeCell')) {
+          const [a, b] = (xAttr(m, 'ref') || '').split(':');
+          if (a && b) merges.push({ r1: rowIndex(a), c1: colIndex(a), r2: rowIndex(b), c2: colIndex(b) });
+        }
+        return gridView(grid, merges, maxR, maxC, truncated);
+      }
+
+      const sheets = xKids(xKid(wb.documentElement, 'sheets'), 'sheet')
+        .filter(s => !/hidden/i.test(xAttr(s, 'state') || ''))
+        .map(s => ({ name: xAttr(s, 'name') || 'Аркуш', path: (rels.get(xAttr(s, 'id')) || {}).target }));
+      return sheetTabs(sheets, sh => sheetView(sh.path));
+    }
+
+    /* --- OpenDocument: odt / ods (+ templates ott/ots, flat XML fodt/fods) --- */
+    function parseXmlBuf(buf, name) {
+      const x = new DOMParser().parseFromString(new TextDecoder().decode(buf), 'application/xml');
+      if (x.getElementsByTagName('parsererror').length) throw new Error('пошкоджений XML' + (name ? ': ' + name : ''));
+      return x;
+    }
+    // text of an ODF paragraph-like node: collapse XML whitespace, honour text:s / tab / line-break
+    function odfText(node) {
+      let out = '';
+      for (const n of node.childNodes) {
+        if (n.nodeType === 3) out += n.nodeValue.replace(/[\t\n\r ]+/g, ' ');
+        else if (n.nodeType !== 1) continue;
+        else if (n.localName === 's') out += ' '.repeat(Math.min(Number(xAttr(n, 'c')) || 1, 200));
+        else if (n.localName === 'tab') out += '\t';
+        else if (n.localName === 'line-break') out += '\n';
+        else if (n.localName !== 'annotation' && n.localName !== 'note') out += odfText(n);
+      }
+      return out;
+    }
+    // table rows in document order, flattening header-rows / row-groups
+    function odfRows(table) {
+      const out = [];
+      const walk = n => {
+        for (const c of n.children) {
+          if (c.localName === 'table-row') out.push(c);
+          else if (c.localName === 'table-header-rows' || c.localName === 'table-rows' || c.localName === 'table-row-group') walk(c);
+        }
+      };
+      walk(table);
+      return out;
+    }
+    const cssLen = v => {
+      const m = /^([\d.]+)(cm|mm|in|pt|pc|px)?$/.exec(v || '');
+      return m ? Math.round(Number(m[1]) * ({ cm: 37.8, mm: 3.78, in: 96, pt: 4 / 3, pc: 16, px: 1 }[m[2] || 'px'])) : 0;
+    };
+    function mimeOf(name, bytes) {
+      const m = IMG_MIME[extOf(name || '')];
+      if (m) return m;
+      if (bytes && bytes[0] === 0x89 && bytes[1] === 0x50) return 'image/png';
+      if (bytes && bytes[0] === 0xff && bytes[1] === 0xd8) return 'image/jpeg';
+      if (bytes && bytes[0] === 0x47 && bytes[1] === 0x49) return 'image/gif';
+      return null;
+    }
+
+    async function buildOdt(buf, flat) {
+      let zip = null, content, stylesDoc = null;
+      if (flat) { content = parseXmlBuf(buf); }
+      else {
+        zip = await unzip(buf);
+        content = await zip.xml('content.xml');
+        stylesDoc = await zip.xml('styles.xml');
+      }
+      const root = content && xDesc(content.documentElement, 'text').find(n => n.parentNode && n.parentNode.localName === 'body');
+      if (!root) throw new Error('це не текстовий документ OpenDocument');
+
+      // styles: 'family:name' -> { parent, outline, name, display, b, i, u, s, pos, align }
+      const styles = new Map(), listStyles = new Map();
+      for (const d of [stylesDoc, content]) {
+        if (!d) continue;
+        for (const st of xDesc(d.documentElement, 'style')) {
+          const tp = xKid(st, 'text-properties'), pp = xKid(st, 'paragraph-properties');
+          const fw = xAttr(tp, 'font-weight'), fs = xAttr(tp, 'font-style');
+          const ul = xAttr(tp, 'text-underline-style'), lt = xAttr(tp, 'text-line-through-style'), tpos = xAttr(tp, 'text-position');
+          styles.set(xAttr(st, 'family') + ':' + xAttr(st, 'name'), {
+            parent: xAttr(st, 'parent-style-name'), outline: Number(xAttr(st, 'default-outline-level')) || 0,
+            name: xAttr(st, 'name') || '', display: xAttr(st, 'display-name') || '',
+            b: fw == null ? undefined : (fw === 'bold' || Number(fw) >= 600),
+            i: fs == null ? undefined : (fs === 'italic' || fs === 'oblique'),
+            u: ul == null ? undefined : ul !== 'none',
+            s: lt == null ? undefined : lt !== 'none',
+            pos: tpos == null ? undefined : (/^(super|[1-9])/.test(tpos) ? 'sup' : /^(sub|-)/.test(tpos) ? 'sub' : ''),
+            align: xAttr(pp, 'text-align') || undefined
+          });
+        }
+        for (const ls of xDesc(d.documentElement, 'list-style')) {
+          const lv = {};
+          for (const l of ls.children) lv[xAttr(l, 'level')] = l.localName === 'list-level-style-number' ? 'number' : 'bullet';
+          listStyles.set(xAttr(ls, 'name'), lv);
+        }
+      }
+      function prop(family, name, key) {
+        for (let k = 0, cur = name; cur && k < 10; k++) {
+          const st = styles.get(family + ':' + cur);
+          if (!st) return undefined;
+          if (st[key] !== undefined) return st[key];
+          cur = st.parent;
+        }
+        return undefined;
+      }
+      function headingLevel(name) {
+        for (let k = 0, cur = name; cur && k < 10; k++) {
+          const st = styles.get('paragraph:' + cur);
+          if (!st) return 0;
+          if (st.outline) return st.outline;
+          const label = st.display || st.name.replace(/_20_/g, ' ');
+          const m = /^heading\s*(\d)/i.exec(label);
+          if (m) return Number(m[1]);
+          if (/^title$/i.test(label)) return 1;
+          if (/^subtitle$/i.test(label)) return 2;
+          cur = st.parent;
+        }
+        return 0;
+      }
+
+      const pending = [];
+      function image(frame) {
+        const im = xKid(frame, 'image');
+        if (!im) return null;
+        const href = (xAttr(im, 'href') || '').replace(/^\.\//, '');
+        const bin = xKid(im, 'binary-data');
+        if (!bin && (!zip || !href || /^[a-z]+:/i.test(href))) return null;
+        const img = el('img', { alt: '' });
+        const w = cssLen(xAttr(frame, 'width'));
+        if (w) img.style.width = w + 'px';
+        const load = bin
+          ? new Promise(res => res(Uint8Array.from(atob(bin.textContent.replace(/\s+/g, '')), ch => ch.charCodeAt(0))))   // bad base64 → rejected, not thrown
+          : zip.bytes(href);
+        const placeholder = () => img.replaceWith(el('span', { class: 'docx-noimg', text: '[зображення ' + (extOf(href) || '?').toUpperCase() + ']' }));
+        pending.push(load.then(b => {
+          const mime = b && mimeOf(href, b);
+          if (!mime) { placeholder(); return; }
+          const u = URL.createObjectURL(new Blob([b], { type: mime }));
+          blobUrls.push(u);
+          img.src = u;
+        }).catch(placeholder));
+        return img;
+      }
+
+      function wrapFor(styleName) {
+        const tags = [];
+        if (prop('text', styleName, 'b')) tags.push('strong');
+        if (prop('text', styleName, 'i')) tags.push('em');
+        if (prop('text', styleName, 'u')) tags.push('u');
+        if (prop('text', styleName, 's')) tags.push('s');
+        const pos = prop('text', styleName, 'pos');
+        if (pos) tags.push(pos);
+        if (!tags.length) return null;
+        const outer = el(tags[0]);
+        let inner = outer;
+        for (const t of tags.slice(1)) { const e = el(t); inner.append(e); inner = e; }
+        return { outer, inner };
+      }
+
+      function inline(node, out) {
+        for (const n of node.childNodes) {
+          if (n.nodeType === 3) { const t = n.nodeValue.replace(/[\t\n\r ]+/g, ' '); if (t) out.append(t); continue; }
+          if (n.nodeType !== 1) continue;
+          switch (n.localName) {
+            case 's': out.append(' '.repeat(Math.min(Number(xAttr(n, 'c')) || 1, 200))); break;
+            case 'tab': out.append('\t'); break;
+            case 'line-break': out.append(el('br')); break;
+            case 'span': {
+              const w = wrapFor(xAttr(n, 'style-name'));
+              if (w) { inline(n, w.inner); out.append(w.outer); } else inline(n, out);
+              break;
+            }
+            case 'a': {
+              const href = xAttr(n, 'href');
+              if (href && /^(https?:|mailto:)/i.test(href)) {
+                const a = el('a', { href, target: '_blank', rel: 'noopener' });
+                inline(n, a);
+                out.append(a);
+              } else inline(n, out);
+              break;
+            }
+            case 'frame': {
+              const img = image(n);
+              if (img) out.append(img);
+              else { const tb = xKid(n, 'text-box'); if (tb) inline(tb, out); }
+              break;
+            }
+            case 'note': { const c = xKid(n, 'note-citation'); if (c) out.append(el('sup', { text: c.textContent })); break; }
+            case 'p': case 'h': inline(n, out); out.append(el('br')); break;   // paragraphs inside text boxes
+            case 'annotation': case 'annotation-end': case 'bookmark': case 'bookmark-start': case 'bookmark-end':
+            case 'soft-page-break': case 'reference-mark-start': case 'reference-mark-end': case 'change': case 'change-start': case 'change-end':
+              break;
+            default: inline(n, out);   // fields (page number, date, sequence…) → their text
+          }
+        }
+      }
+
+      function paragraph(node, tag) {
+        const sn = xAttr(node, 'style-name');
+        const p = el(tag);
+        const align = prop('paragraph', sn, 'align');
+        if (align === 'center') p.style.textAlign = 'center';
+        else if (align === 'end' || align === 'right') p.style.textAlign = 'right';
+        else if (align === 'justify') p.style.textAlign = 'justify';
+        if (tag === 'p' && prop('paragraph', sn, 'b')) p.style.fontWeight = 'bold';
+        if (prop('paragraph', sn, 'i')) p.style.fontStyle = 'italic';
+        inline(node, p);
+        if (!p.childNodes.length) p.append(el('br'));
+        return p;
+      }
+
+      function table(t) {
+        const tbl = el('table');
+        for (const row of odfRows(t)) {
+          const rep = Math.min(Number(xAttr(row, 'number-rows-repeated')) || 1, 50);
+          const tr = el('tr');
+          for (const cell of row.children) {
+            if (cell.localName !== 'table-cell') continue;   // covered-table-cell = part of a merged cell
+            const crep = Math.min(Number(xAttr(cell, 'number-columns-repeated')) || 1, 50);
+            const cs = Number(xAttr(cell, 'number-columns-spanned')) || 1, rs = Number(xAttr(cell, 'number-rows-spanned')) || 1;
+            for (let k = 0; k < crep; k++) {
+              const td = el('td', { colspan: cs > 1 ? cs : null, rowspan: rs > 1 ? rs : null });
+              blocks(cell, td);
+              tr.append(td);
+            }
+          }
+          for (let k = 0; k < rep; k++) tbl.append(k ? tr.cloneNode(true) : tr);
+        }
+        return el('div', { class: 'tbl' }, tbl);
+      }
+
+      function blocks(node, out, listStyle, level) {
+        for (const c of node.children) {
+          switch (c.localName) {
+            case 'h': {
+              const lvl = Number(xAttr(c, 'outline-level')) || headingLevel(xAttr(c, 'style-name')) || 1;
+              out.append(paragraph(c, 'h' + Math.min(lvl, 6)));
+              break;
+            }
+            case 'p': {
+              const lvl = headingLevel(xAttr(c, 'style-name'));
+              out.append(paragraph(c, lvl ? 'h' + Math.min(lvl, 6) : 'p'));
+              break;
+            }
+            case 'list': {
+              const ls = xAttr(c, 'style-name') || listStyle, lev = (level || 0) + 1;
+              const kind = (listStyles.get(ls) || {})[lev] || 'bullet';
+              const list = el(kind === 'number' ? 'ol' : 'ul');
+              for (const it of c.children) {
+                if (it.localName !== 'list-item' && it.localName !== 'list-header') continue;
+                const li = el('li');
+                if (it.localName === 'list-header') li.style.listStyle = 'none';
+                blocks(it, li, ls, lev);
+                list.append(li);
+              }
+              out.append(list);
+              break;
+            }
+            case 'table': out.append(table(c)); break;
+            case 'section': case 'index-body': case 'index-title': case 'table-of-content': case 'alphabetical-index':
+            case 'illustration-index': case 'object-index': case 'user-index': case 'table-index': case 'bibliography':
+              blocks(c, out, listStyle, level); break;
+          }
+        }
+      }
+
+      const page = el('div', { class: 'docx-page' });
+      blocks(root, page);
+      await Promise.all(pending);
+      return page;
+    }
+
+    async function buildOds(buf, flat) {
+      const content = flat ? parseXmlBuf(buf) : await (await unzip(buf)).xml('content.xml');
+      const sheetRoot = content && xDesc(content.documentElement, 'spreadsheet')[0];
+      if (!sheetRoot) throw new Error('це не таблиця OpenDocument');
+      const NUMERIC = new Set(['float', 'percentage', 'currency', 'date', 'time']);
+
+      function sheetView(table) {
+        const grid = new Map(), merges = [];
+        let maxR = 0, maxC = 0, truncated = false, r = 0;
+        for (const row of odfRows(table)) {
+          const rep = Number(xAttr(row, 'number-rows-repeated')) || 1;
+          const cells = [];
+          let c = 0;
+          for (const cell of row.children) {
+            const ln = cell.localName;
+            if (ln !== 'table-cell' && ln !== 'covered-table-cell') continue;
+            const crep = Number(xAttr(cell, 'number-columns-repeated')) || 1;
+            // LibreOffice stores the formatted display text in text:p, so dates/currency come out as shown
+            const text = ln === 'table-cell' ? xKids(cell, 'p').map(odfText).join('\n').trim() : '';
+            if (!text) { c += crep; continue; }   // empty cells are often repeated thousands of times
+            const num = NUMERIC.has(xAttr(cell, 'value-type'));
+            const cs = Number(xAttr(cell, 'number-columns-spanned')) || 1, rs = Number(xAttr(cell, 'number-rows-spanned')) || 1;
+            for (let k = 0; k < crep; k++) {
+              if (++c > XL_MAX_COLS) { truncated = true; break; }
+              cells.push({ c, text, num, cs, rs });
+            }
+          }
+          if (!cells.length) { r += rep; continue; }
+          for (let k = 0; k < rep; k++) {
+            if (++r > XL_MAX_ROWS) { truncated = true; break; }
+            for (const x of cells) {
+              grid.set(r + ':' + x.c, { text: x.text, num: x.num });
+              if (x.cs > 1 || x.rs > 1) merges.push({ r1: r, c1: x.c, r2: r + x.rs - 1, c2: x.c + x.cs - 1 });
+              if (x.c > maxC) maxC = x.c;
+            }
+            maxR = r;
+          }
+          if (r > XL_MAX_ROWS) break;
+        }
+        return gridView(grid, merges, maxR, maxC, truncated);
+      }
+
+      const sheets = xKids(sheetRoot, 'table').map(t => ({ name: xAttr(t, 'name') || 'Аркуш', node: t }));
+      return sheetTabs(sheets, sh => sheetView(sh.node));
+    }
+
+    async function renderOffice() {
+      const { segs, type } = fileCtx;
+      const st = $('stage');
+      st.className = 'stage';
+      st.replaceChildren(el('div', { class: 'empty', text: 'Відкриваю документ…' }));
+      try {
+        const res = await fetch(pathOf(segs), { cache: 'no-store' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const buf = await res.arrayBuffer();
+        if (fileCtx.segs !== segs) return;
+        const flat = /^f(odt|ods)$/.test(extOf(fileCtx.name));   // LibreOffice flat XML, not zipped
+        const node = type === 'docx' ? await buildDocx(buf) : type === 'xlsx' ? await buildXlsx(buf)
+          : type === 'odt' ? await buildOdt(buf, flat) : await buildOds(buf, flat);
+        if (fileCtx.segs !== segs) return;
+        st.className = 'stage ' + (type === 'docx' || type === 'odt' ? 'docx' : 'xlsx');
+        st.replaceChildren(node);
+        st.after(el('p', { class: 'note', text: 'Спрощений перегляд: складне форматування може відрізнятися від оригіналу. Точна копія — «Скачати».' }));
+      } catch (e) {
+        console.error(e);
+        if (fileCtx.segs === segs) noPreview('Не вдалося відкрити документ: ' + e.message);
+      }
+    }
+
+    /* ---------- 3D models: stl (static software render: no WebGL, no libraries) ---------- */
+    const MODEL_MAX = 150 * 1024 * 1024;
+
+    function parseStl(buf) {
+      const dv = new DataView(buf);
+      if (buf.byteLength >= 84) {
+        const n = dv.getUint32(80, true);
+        if (84 + n * 50 === buf.byteLength) {           // binary STL: exact size check (some start with "solid" too)
+          const pos = new Float32Array(n * 9);
+          for (let i = 0; i < n; i++) {
+            const o = 84 + i * 50 + 12;                  // skip the 12-byte normal
+            for (let k = 0; k < 9; k++) pos[i * 9 + k] = dv.getFloat32(o + k * 4, true);
+          }
+          return { pos };
+        }
+      }
+      const text = new TextDecoder().decode(buf);
+      const re = /vertex\s+(\S+)\s+(\S+)\s+(\S+)/g;
+      const out = [];
+      let m;
+      while ((m = re.exec(text))) out.push(Number(m[1]), Number(m[2]), Number(m[3]));
+      if (!out.length || out.length % 9) throw new Error('не вдалося розібрати STL');
+      return { pos: Float32Array.from(out) };
+    }
+
+    // Orthographic views, Z up. th = rotation around Z, ph = elevation (camera looks along +Y after rotation).
+    const VIEWS3D = {
+      iso:    { label: 'Ізометрія',       th: -Math.PI / 4,    ph: Math.PI / 6 },
+      iso2:   { label: 'Ізометрія ззаду', th: 3 * Math.PI / 4, ph: Math.PI / 6 },
+      front:  { label: 'Спереду', th: 0,            ph: 0 },
+      back:   { label: 'Ззаду',   th: Math.PI,      ph: 0 },
+      left:   { label: 'Зліва',   th: Math.PI / 2,  ph: 0 },
+      right:  { label: 'Справа',  th: -Math.PI / 2, ph: 0 },
+      top:    { label: 'Зверху',  th: 0,            ph: Math.PI / 2 },
+      bottom: { label: 'Знизу',   th: 0,            ph: -Math.PI / 2 },
+      // drawing sheet, first-angle (ДСТУ/ЄСКД): front top-left, left view to its right, top view below it
+      sheet:  { label: '4 види', cells: [['front', 'Вид спереду'], ['left', 'Вид зліва'], ['top', 'Вид зверху'], ['iso', 'Ізометрія']] }
+    };
+
+    // z-buffer rasteriser for one view. W = 0 → only measure the projected extent (for a shared scale).
+    // Returns RGBA pixels (transparent background) + model size + triangle count.
+    function rasterMesh(pos, W, H, view = VIEWS3D.iso, fixedScale = 0) {
+      let minX = Infinity, minY = Infinity, minZ = Infinity, maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
+      for (let i = 0; i < pos.length; i += 3) {
+        const x = pos[i], y = pos[i + 1], z = pos[i + 2];
+        if (!isFinite(x) || !isFinite(y) || !isFinite(z)) continue;
+        if (x < minX) minX = x; if (x > maxX) maxX = x;
+        if (y < minY) minY = y; if (y > maxY) maxY = y;
+        if (z < minZ) minZ = z; if (z > maxZ) maxZ = z;
+      }
+      if (!isFinite(minX)) throw new Error('модель порожня');
+      const cx = (minX + maxX) / 2, cy = (minY + maxY) / 2, cz = (minZ + maxZ) / 2;
+      const th = view.th, ph = view.ph;
+      const ct = Math.cos(th), st = Math.sin(th), cp = Math.cos(ph), sp = Math.sin(ph);
+      const V = new Float32Array(pos.length);   // view space: right, up, depth (bigger = farther)
+      let sx0 = Infinity, sx1 = -Infinity, sy0 = Infinity, sy1 = -Infinity, d0 = Infinity, d1 = -Infinity;
+      for (let i = 0; i < pos.length; i += 3) {
+        const x = pos[i] - cx, y = pos[i + 1] - cy, z = pos[i + 2] - cz;
+        const x1 = x * ct - y * st, y1 = x * st + y * ct;
+        const sx = x1, sy = y1 * sp + z * cp, d = y1 * cp - z * sp;
+        V[i] = sx; V[i + 1] = sy; V[i + 2] = d;
+        if (sx < sx0) sx0 = sx; if (sx > sx1) sx1 = sx;
+        if (sy < sy0) sy0 = sy; if (sy > sy1) sy1 = sy;
+        if (d < d0) d0 = d; if (d > d1) d1 = d;
+      }
+      const span = Math.max(sx1 - sx0, sy1 - sy0, 1e-9);
+      if (!W) return { ext: [Math.max(sx1 - sx0, span * 0.05), Math.max(sy1 - sy0, span * 0.05)] };
+      const scale = fixedScale || Math.min(W * 0.9 / Math.max(sx1 - sx0, span * 0.05), H * 0.9 / Math.max(sy1 - sy0, span * 0.05));
+      const ox = W / 2 - (sx0 + sx1) / 2 * scale, oy = H / 2 + (sy0 + sy1) / 2 * scale;
+      const zbuf = new Float32Array(W * H).fill(Infinity);
+      const px = new Uint8ClampedArray(W * H * 4);
+      // key light from upper-left-front; normals are turned towards the camera (STL winding is often
+      // inconsistent, and every visible face faces the viewer) → top bright, left medium, right dark
+      let lx = -0.5, ly = 0.75, lz = -0.45;
+      const ll = Math.hypot(lx, ly, lz); lx /= ll; ly /= ll; lz /= ll;
+      const BASE = [245, 130, 32];   // orange part: contrasts with the blue UI on light and dark backgrounds
+      let tris = 0;
+      for (let t = 0; t < V.length; t += 9) {
+        const ax = V[t] * scale + ox, ay = oy - V[t + 1] * scale, az = V[t + 2];
+        const bx = V[t + 3] * scale + ox, by = oy - V[t + 4] * scale, bz = V[t + 5];
+        const qx = V[t + 6] * scale + ox, qy = oy - V[t + 7] * scale, qz = V[t + 8];
+        if (!(isFinite(ax) && isFinite(bx) && isFinite(qx) && isFinite(ay) && isFinite(by) && isFinite(qy))) continue;
+        tris++;
+        // normal in view space (use un-flipped y)
+        const ux = V[t + 3] - V[t], uy = V[t + 4] - V[t + 1], uz = V[t + 5] - V[t + 2];
+        const vx = V[t + 6] - V[t], vy = V[t + 7] - V[t + 1], vz = V[t + 8] - V[t + 2];
+        let nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+        const nl = (nz > 0 ? -1 : 1) * (Math.hypot(nx, ny, nz) || 1);   // flip to face the camera (camera looks along +depth)
+        nx /= nl; ny /= nl; nz /= nl;
+        const shade = 0.35 + 0.6 * Math.max(0, nx * lx + ny * ly + nz * lz) + 0.12 * Math.max(0, -nz);
+        const r = BASE[0] * shade, g = BASE[1] * shade, b = BASE[2] * shade;
+        const area = (bx - ax) * (qy - ay) - (by - ay) * (qx - ax);
+        if (area === 0) continue;
+        const inv = 1 / area;
+        const xa = Math.max(0, Math.floor(Math.min(ax, bx, qx))), xb = Math.min(W - 1, Math.ceil(Math.max(ax, bx, qx)));
+        const ya = Math.max(0, Math.floor(Math.min(ay, by, qy))), yb = Math.min(H - 1, Math.ceil(Math.max(ay, by, qy)));
+        for (let y = ya; y <= yb; y++) {
+          const py = y + 0.5;
+          for (let x = xa; x <= xb; x++) {
+            const pxl = x + 0.5;
+            const w0 = ((bx - pxl) * (qy - py) - (by - py) * (qx - pxl)) * inv;
+            if (w0 < 0) continue;
+            const w1 = ((qx - pxl) * (ay - py) - (qy - py) * (ax - pxl)) * inv;
+            if (w1 < 0) continue;
+            const w2 = 1 - w0 - w1;
+            if (w2 < 0) continue;
+            const z = w0 * az + w1 * bz + w2 * qz, idx = y * W + x;
+            if (z >= zbuf[idx]) continue;
+            zbuf[idx] = z;
+            const o = idx * 4;
+            px[o] = r; px[o + 1] = g; px[o + 2] = b; px[o + 3] = 255;
+          }
+        }
+      }
+      // outlines: darken where depth jumps (silhouettes, sharp steps) — gives the shape definition
+      const jump = (d1 - d0) * 0.02 + 1e-9;
+      for (let y = 0; y < H - 1; y++) for (let x = 0; x < W - 1; x++) {
+        const i = y * W + x, z = zbuf[i];
+        if (z === Infinity) continue;
+        const zr = zbuf[i + 1], zd = zbuf[i + W];
+        if (zr === Infinity || zd === Infinity || Math.abs(zr - z) > jump || Math.abs(zd - z) > jump) {
+          const o = i * 4;
+          px[o] *= 0.55; px[o + 1] *= 0.55; px[o + 2] *= 0.55;
+        }
+      }
+      return { pixels: px, size: [maxX - minX, maxY - minY, maxZ - minZ], tris };
+    }
+
+    // Render one view (or the 4-view sheet) to a canvas sized for the page.
+    function drawModelView(pos, key, cssW, name) {
+      const v = VIEWS3D[key];
+      const dpr = window.devicePixelRatio || 1;
+      const cssH = Math.max(300, Math.min(Math.round(window.innerHeight * (v.cells ? 0.8 : 0.7)), Math.round(cssW * 0.75)));
+      const ss = Math.min(2 * dpr, 2400 / cssW);   // supersample for smooth edges
+      const W = Math.round(cssW * ss), H = Math.round(cssH * ss);
+      const big = document.createElement('canvas');
+      big.width = W; big.height = H;
+      const bctx = big.getContext('2d');
+      let first = null;
+      if (!v.cells) {
+        first = rasterMesh(pos, W, H, v);
+        bctx.putImageData(new ImageData(first.pixels, W, H), 0, 0);
+      } else {
+        const cw = Math.floor(W / 2), ch = Math.floor(H / 2);
+        // one scale for all views so sizes are comparable (leave room for the label)
+        let scale = Infinity;
+        for (const [k] of v.cells) {
+          const e = rasterMesh(pos, 0, 0, VIEWS3D[k]).ext;
+          scale = Math.min(scale, cw * 0.82 / e[0], ch * 0.72 / e[1]);
+        }
+        v.cells.forEach(([k], n) => {
+          const r = rasterMesh(pos, cw, ch, VIEWS3D[k], scale);
+          first = first || r;
+          bctx.putImageData(new ImageData(r.pixels, cw, ch), (n % 2) * cw, Math.floor(n / 2) * ch);
+        });
+      }
+      const cv = el('canvas', { role: 'img', 'aria-label': v.label + ': ' + name });
+      cv.width = Math.round(cssW * dpr); cv.height = Math.round(cssH * dpr);
+      cv.style.width = cssW + 'px'; cv.style.height = cssH + 'px';
+      const ctx = cv.getContext('2d');
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(big, 0, 0, cv.width, cv.height);
+      if (v.cells) {   // separators + labels
+        const css = getComputedStyle(document.body);
+        ctx.scale(dpr, dpr);
+        ctx.strokeStyle = css.getPropertyValue('--border').trim() || '#ccc';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(cssW / 2, 0); ctx.lineTo(cssW / 2, cssH);
+        ctx.moveTo(0, cssH / 2); ctx.lineTo(cssW, cssH / 2);
+        ctx.stroke();
+        ctx.fillStyle = css.getPropertyValue('--muted').trim() || '#666';
+        ctx.font = '13px ' + (css.getPropertyValue('--font').trim() || 'sans-serif');
+        v.cells.forEach(([, label], n) => ctx.fillText(label, (n % 2) * cssW / 2 + 10, Math.floor(n / 2) * cssH / 2 + 20));
+      }
+      return { canvas: cv, size: first.size, tris: first.tris };
+    }
+
+    async function renderModel() {
+      const { segs, name } = fileCtx;
+      const st = $('stage');
+      st.className = 'stage model';
+      st.replaceChildren(el('div', { class: 'empty', text: 'Завантаження моделі…' }));
+      try {
+        const res = await fetch(pathOf(segs), { cache: 'no-store' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const buf = await res.arrayBuffer();
+        if (fileCtx.segs !== segs) return;
+        const mesh = parseStl(buf);
+        if (fileCtx.segs !== segs) return;
+        const holder = el('div', { class: 'model-view' });
+        const tabs = el('div', { class: 'sheet-tabs', role: 'tablist', 'aria-label': 'Проекція' });
+        const cache = new Map();
+        let info = null, seq = 0;
+        const show = async key => {
+          const my = ++seq;
+          try { localStorage.setItem('docs.view3d', key); } catch (_) {}
+          tabs.querySelectorAll('button').forEach(b => { const on = b.dataset.key === key; b.classList.toggle('on', on); b.setAttribute('aria-selected', String(on)); });
+          if (!cache.has(key)) {
+            holder.replaceChildren(el('div', { class: 'empty', text: 'Рендеринг…' }));
+            await new Promise(r => setTimeout(r, 20));   // let the message paint before the heavy loop
+            if (my !== seq || fileCtx.segs !== segs) return;
+            const r = drawModelView(mesh.pos, key, Math.max(300, st.clientWidth || 800), name);
+            cache.set(key, r.canvas);
+            info = info || r;
+          }
+          if (my !== seq || fileCtx.segs !== segs) return;
+          holder.replaceChildren(cache.get(key));
+        };
+        for (const [key, v] of Object.entries(VIEWS3D)) {
+          tabs.append(el('button', { type: 'button', role: 'tab', 'data-key': key, text: v.label, onclick: () => show(key) }));
+        }
+        st.replaceChildren(tabs, holder);
+        let start = 'iso';
+        try { const k = localStorage.getItem('docs.view3d'); if (VIEWS3D[k]) start = k; } catch (_) {}
+        await show(start);
+        if (fileCtx.segs !== segs || !info) return;
+        const mm = v => (+v.toFixed(v < 10 ? 2 : 1)).toLocaleString('uk-UA');
+        st.after(el('p', { class: 'note', text: 'Розмір: ' + info.size.map(mm).join(' × ') + ' мм (X × Y × Z) · '
+          + info.tris.toLocaleString('uk-UA') + ' трикутників · STL не зберігає одиниці, прийнято мм' }));
+      } catch (e) {
+        console.error(e);
+        if (fileCtx.segs === segs) noPreview('Не вдалося відкрити модель: ' + e.message);
+      }
+    }
+
+    /* ---------- PDF viewer: pdf.js (Mozilla, Apache-2.0) vendored in assets/pdfjs, our own UI ---------- */
+    const PDFJS = '__ASSETS_PREFIX__pdfjs/';   // dufs replaces the placeholder with its assets path
+    let pdfjsLib = null, pdfView = null;
+
+    async function loadPdfjs() {
+      if (!pdfjsLib) {
+        pdfjsLib = await import(PDFJS + 'pdf.min.mjs');
+        pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS + 'pdf.worker.min.mjs';
+      }
+      return pdfjsLib;
+    }
+
+    function closePdf() {
+      const v = pdfView;
+      if (!v) return;
+      pdfView = null;
+      v.closed = true;
+      if (v.observer) v.observer.disconnect();
+      window.removeEventListener('resize', v.onResize);
+      v.pages.forEach(p => { if (p.task) p.task.cancel(); });
+      v.task.destroy();
+    }
+
+    function pdfIframeFallback(url) {   // browser's built-in viewer (used if pdf.js cannot load)
+      const st = $('stage');
+      st.className = 'stage';
+      st.replaceChildren(el('iframe', { src: url, title: fileCtx.name }));
+      st.after(el('p', { class: 'note', text: 'Якщо PDF не показується (наприклад, на телефоні) — натисніть «Відкрити окремо» або «Скачати».' }));
+    }
+
+    async function renderPdf() {
+      const { segs } = fileCtx;
+      const url = pathOf(segs);
+      const st = $('stage');
+      st.className = 'stage pdfv';
+      const status = el('div', { class: 'empty', text: 'Завантаження PDF…' });
+      st.replaceChildren(status);
+      let lib;
+      try { lib = await loadPdfjs(); }
+      catch (e) { console.error(e); if (fileCtx.segs === segs) pdfIframeFallback(url); return; }
+      if (fileCtx.segs !== segs) return;
+
+      const task = lib.getDocument({
+        url, isEvalSupported: false, enableXfa: false,
+        cMapUrl: PDFJS + 'cmaps/', cMapPacked: true,
+        standardFontDataUrl: PDFJS + 'standard_fonts/', wasmUrl: PDFJS + 'wasm/', iccUrl: PDFJS + 'iccs/'
+      });
+      const v = { task, doc: null, pages: [], scale: 0, visible: new Set(), closed: false };
+      pdfView = v;
+      task.onProgress = p => { if (p.total) status.textContent = 'Завантаження PDF… ' + Math.min(100, Math.round(p.loaded / p.total * 100)) + '%'; };
+      task.onPassword = (update, reason) => {
+        const pw = prompt(reason === lib.PasswordResponses.INCORRECT_PASSWORD ? 'Невірний пароль. Пароль до PDF:' : 'PDF захищено паролем. Введіть пароль:');
+        if (pw == null) { closePdf(); noPreview('PDF захищено паролем.'); }
+        else update(pw);
+      };
+      try { v.doc = await task.promise; }
+      catch (e) {
+        if (v.closed) return;
+        console.error(e);
+        closePdf();
+        if (fileCtx.segs === segs) noPreview('Не вдалося відкрити PDF: ' + (e && e.message || e));
+        return;
+      }
+      if (v.closed || fileCtx.segs !== segs) return;
+
+      const n = v.doc.numPages;
+      const first = (await v.doc.getPage(1)).getViewport({ scale: 1 });
+      v.base = { w: first.width, h: first.height };   // placeholder size until a page's own size is known
+
+      const pagesBox = el('div', { class: 'pdf-pages' });
+      for (let i = 0; i < n; i++) {
+        const canvas = el('canvas');
+        const wrap = el('div', { class: 'pdf-page', 'data-i': String(i) }, canvas);
+        v.pages.push({ wrap, canvas, w: 0, h: 0, rendered: 0, task: null, busy: false });
+        pagesBox.append(wrap);
+      }
+      st.replaceChildren(pagesBox);
+
+      // pages always fit the width (pinch-zoom on phones still works)
+      function fit() {
+        v.scale = Math.max(200, pagesBox.clientWidth - 24) / v.base.w;
+        v.pages.forEach(p => {
+          p.wrap.style.width = Math.floor((p.w || v.base.w) * v.scale) + 'px';
+          p.wrap.style.height = Math.floor((p.h || v.base.h) * v.scale) + 'px';
+        });
+        renderVisible();
+      }
+
+      async function renderPage(i) {
+        const p = v.pages[i];
+        if (p.busy || p.rendered === v.scale || v.closed) return;
+        p.busy = true;
+        try {
+          const page = await v.doc.getPage(i + 1);
+          if (!p.w) {   // real page size (pages may differ from page 1)
+            const vp1 = page.getViewport({ scale: 1 });
+            p.w = vp1.width; p.h = vp1.height;
+            p.wrap.style.width = Math.floor(p.w * v.scale) + 'px';
+            p.wrap.style.height = Math.floor(p.h * v.scale) + 'px';
+          }
+          const scale = v.scale;
+          let ratio = Math.min(window.devicePixelRatio || 1, 2);
+          const cssW = p.w * scale, cssH = p.h * scale, MAXPX = 16e6;   // phones cap canvas size
+          if (cssW * cssH * ratio * ratio > MAXPX) ratio = Math.sqrt(MAXPX / (cssW * cssH));
+          const off = document.createElement('canvas');                 // draw off-screen, swap when done (no flicker)
+          off.width = Math.floor(cssW * ratio); off.height = Math.floor(cssH * ratio);
+          p.task = page.render({ canvas: off, viewport: page.getViewport({ scale: scale * ratio }) });
+          await p.task.promise;
+          if (v.closed || !v.visible.has(i)) return;
+          p.canvas.width = off.width; p.canvas.height = off.height;
+          p.canvas.getContext('2d').drawImage(off, 0, 0);
+          off.width = off.height = 0;
+          p.rendered = scale;
+        } catch (e) {
+          if (!(e && e.name === 'RenderingCancelledException')) console.error(e);
+        } finally {
+          p.busy = false;
+          p.task = null;
+        }
+        if (!v.closed && v.visible.has(i) && p.rendered !== v.scale) renderPage(i);   // width changed meanwhile
+      }
+      let queue = Promise.resolve();
+      function renderVisible() {
+        [...v.visible].sort((a, b) => a - b).forEach(i => { queue = queue.then(() => renderPage(i)); });   // one at a time: bounded memory
+      }
+      function release(i) {   // far from the screen: free the canvas memory
+        const p = v.pages[i];
+        if (p.task) p.task.cancel();
+        p.canvas.width = p.canvas.height = 0;
+        p.rendered = 0;
+      }
+      v.observer = new IntersectionObserver(entries => {
+        for (const en of entries) {
+          const i = Number(en.target.dataset.i);
+          if (en.isIntersecting) v.visible.add(i);
+          else { v.visible.delete(i); release(i); }
+        }
+        renderVisible();
+      }, { rootMargin: '1200px 0px' });
+      v.pages.forEach(p => v.observer.observe(p.wrap));
+
+      let rt = null;
+      v.onResize = () => { clearTimeout(rt); rt = setTimeout(() => { if (!v.closed) fit(); }, 200); };
+      window.addEventListener('resize', v.onResize);
+      fit();
+    }
+
+    /* ---------- text loading ---------- */
+    async function fetchText(segs) {
+      const res = await fetch(pathOf(segs), { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const buf = await res.arrayBuffer();
+      let text, encoding = 'UTF-8';
+      try { text = new TextDecoder('utf-8', { fatal: true }).decode(buf); }
+      catch (_) { text = new TextDecoder('windows-1251').decode(buf); encoding = 'Windows-1251'; }
+      if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+      return { text, encoding, etag: res.headers.get('etag') };
+    }
+
+    /* ---------- file view ---------- */
+    let fileCtx = null;   // { segs, name, type, info, siblings, idx }
+
+    async function showFile() {
+      const segs = S.segs;
+      const name = segs[segs.length - 1] || '';
+      const type = typeOf(name);
+      const editMode = location.hash === '#edit';
+      fileCtx = { segs, name, type, info: null, siblings: [], idx: -1 };
+      document.title = name + ' — Документація';
+      renderCrumbs(segs, true);
+      $('view-icon').replaceChildren(typeIcon(type));
+      $('view-name').textContent = name;
+      $('view-meta').textContent = '';
+      $('view-actions').replaceChildren();
+      $('stage').replaceChildren();
+      $('stage').className = '';
+
+      // parent listing → permissions, metadata, prev/next
+      try {
+        const data = await getJson(dirHref(segs.slice(0, -1)) + '?json');
+        if (fileCtx.segs !== segs) return;
+        applyPerms(data);
+        if (data.dir_exists === false || !(data.paths || []).some(p => !isDir(p) && p.name === name)) {
+          return goNearestExisting(segs);   // the file (or its folder) no longer exists
+        }
+        const files = (data.paths || []).filter(p => !isDir(p) && !p.name.startsWith('.'));
+        files.sort((a, b) => collator.compare(a.name, b.name));
+        fileCtx.siblings = files;
+        fileCtx.idx = files.findIndex(p => p.name === name);
+        fileCtx.info = files[fileCtx.idx] || null;
+      } catch (e) {
+        if (fileCtx.segs !== segs) return;
+        if (e.locked) {
+          $('stage').className = 'stage';
+          return showUnlock($('stage'), e.locked, () => { if (fileCtx && fileCtx.segs === segs) render(); });
+        }
+        if (/HTTP 404/.test(e.message)) return goNearestExisting(segs);
+        console.error(e);
+      }
+      if (fileCtx.segs !== segs) return;
+
+      const info = fileCtx.info;
+      if (info) $('view-meta').textContent = [formatSize(info.size), formatDate(info.mtime)].filter(Boolean).join(' · ');
+      const canEdit = S.canWrite && isTextual(type) && (!info || info.size <= TEXT_MAX);
+      renderViewActions(canEdit, editMode && canEdit);
+
+      if (editMode && canEdit) return openEditor();
+      renderStage();
+    }
+
+    function renderViewActions(canEdit, editMode) {
+      const { segs, name, siblings, idx } = fileCtx;
+      const acts = [];
+      if (siblings.length > 1 && idx >= 0 && !editMode) {
+        const prev = siblings[(idx - 1 + siblings.length) % siblings.length];
+        const next = siblings[(idx + 1) % siblings.length];
+        acts.push(linkBtn('chevron_left', 'Попередній: ' + prev.name, 'btn-soft', viewHref(segs.slice(0, -1).concat(prev.name)), { iconOnly: true }));
+        acts.push(linkBtn('chevron_right', 'Наступний: ' + next.name, 'btn-soft', viewHref(segs.slice(0, -1).concat(next.name)), { iconOnly: true }));
+        acts.slice(-2).forEach(a => a.setAttribute('data-spa', ''));
+      }
+      if (editMode) {
+        acts.push(button('save', 'Зберегти', 'btn-success', () => saveEditor()));
+        acts.push(button('visibility', 'Закрити редактор', 'btn-soft', () => closeEditor()));
+      } else {
+        if (canEdit) { const a = linkBtn('edit', 'Редагувати', 'btn-primary', editHref(segs)); a.setAttribute('data-spa', ''); acts.push(a); }
+        acts.push(linkBtn('download', 'Скачати', 'btn-soft', pathOf(segs), { download: name }));
+        acts.push(linkBtn('open_in_new', 'Відкрити окремо', 'btn-soft', pathOf(segs), { iconOnly: true, target: '_blank' }));
+        acts.push(button('link', 'Копіювати посилання', 'btn-soft', () => copyLink(segs), { iconOnly: true }));
+        if (S.canWrite && S.canDelete) acts.push(button('move', 'Перейменувати / перемістити', 'btn-soft', () => renameOrMove(segs, false), { iconOnly: true }));
+        if (S.canDelete) acts.push(button('delete', 'Видалити', 'btn-danger', () => removePath(segs, false), { iconOnly: true }));
+      }
+      $('view-actions').replaceChildren(...acts);
+    }
+
+    function noPreview(msg) {
+      const st = $('stage');
+      st.className = 'stage nopreview';
+      st.replaceChildren(typeIcon(fileCtx.type),
+        el('div', { text: msg || 'Попередній перегляд для цього типу файлів недоступний.' }),
+        el('div', { class: 'np-actions' },
+          linkBtn('download', 'Скачати', 'btn-primary', pathOf(fileCtx.segs), { download: fileCtx.name }),
+          fileCtx.type === 'other' && (!fileCtx.info || fileCtx.info.size <= TEXT_MAX)
+            ? button('text', 'Показати як текст', 'btn-soft', () => renderText(true)) : null));
+    }
+
+    async function renderStage() {
+      const { segs, type, info } = fileCtx;
+      const st = $('stage');
+      const url = pathOf(segs);
+      if (type === 'video') {
+        st.className = 'stage media';
+        const v = el('video', { controls: true, preload: 'metadata', playsinline: true, src: url });
+        v.addEventListener('error', () => {
+          st.replaceChildren(el('div', { class: 'media-error' },
+            el('p', { text: 'Браузер не може відтворити цей формат відео (' + extOf(fileCtx.name).toUpperCase() + ').' }),
+            el('p', { class: 'note', style: 'color:#ccc', text: 'Скачайте файл і відкрийте у VLC, або конвертуйте в MP4 (H.264).' })));
+        });
+        st.replaceChildren(v);
+      } else if (type === 'audio') {
+        st.className = 'stage audio';
+        st.replaceChildren(typeIcon('audio'), el('audio', { controls: true, preload: 'metadata', src: url }));
+      } else if (type === 'image') {
+        st.className = 'stage image';
+        const img = el('img', { src: url, alt: fileCtx.name });
+        img.addEventListener('click', () => st.classList.toggle('zoom'));
+        st.replaceChildren(img);
+      } else if (type === 'pdf') {
+        await renderPdf();
+      } else if (type === 'docx' || type === 'xlsx' || type === 'odt' || type === 'ods') {
+        if (info && info.size > OFFICE_MAX) return noPreview('Документ завеликий для перегляду в браузері (' + formatSize(info.size) + ').');
+        await renderOffice();
+      } else if (type === 'model') {
+        if (info && info.size > MODEL_MAX) return noPreview('Модель завелика для перегляду в браузері (' + formatSize(info.size) + ').');
+        await renderModel();
+      } else if (type === 'legacy') {
+        noPreview('Перегляд формату .' + extOf(fileCtx.name) + ' недоступний (підтримуються .docx, .xlsx, .odt, .ods). Скачайте файл або збережіть його у новому форматі.');
+      } else if (isTextual(type)) {
+        if (info && info.size > TEXT_MAX) return noPreview('Файл завеликий для перегляду в браузері (' + formatSize(info.size) + ').');
+        await renderText(false);
+      } else {
+        noPreview();
+      }
+    }
+
+    async function renderText(forcePlain) {
+      const { segs, type } = fileCtx;
+      const st = $('stage');
+      st.className = 'stage';
+      st.replaceChildren(el('div', { class: 'empty', text: 'Завантаження…' }));
+      let r;
+      try { r = await fetchText(segs); }
+      catch (e) { if (fileCtx.segs === segs) noPreview('Не вдалося завантажити файл: ' + e.message); return; }
+      if (fileCtx.segs !== segs) return;
+      if (type === 'md' && !forcePlain) {
+        const box = el('article', { class: 'md' });
+        box.innerHTML = md(r.text);
+        st.replaceChildren(box);
+      } else if (type === 'csv' && !forcePlain) {
+        const rows = parseCsv(r.text, detectDelim(r.text, extOf(fileCtx.name)));
+        const width = Math.max(0, ...rows.slice(0, 200).map(x => x.length));
+        const head = rows.shift() || [];
+        const table = el('table', {},
+          el('thead', {}, el('tr', {}, el('th', { text: '#' }), ...Array.from({ length: width }, (_, j) => el('th', { text: head[j] || '' })))),
+          el('tbody', {}, ...rows.map((row, i) => el('tr', {}, el('td', { class: 'n', text: String(i + 1) }),
+            ...Array.from({ length: width }, (_, j) => el('td', { text: row[j] || '' }))))));
+        st.className = 'stage csv';
+        st.replaceChildren(table);
+        if (rows.length >= CSV_MAX_ROWS) st.after(el('p', { class: 'note', text: 'Показано перші ' + CSV_MAX_ROWS + ' рядків.' }));
+      } else {
+        st.className = 'stage text';
+        st.replaceChildren(el('pre', { text: r.text }));
+      }
+      if (r.encoding !== 'UTF-8') st.after(el('p', { class: 'note', text: 'Кодування: ' + r.encoding + '. Після редагування файл буде збережено в UTF-8.' }));
+    }
+
+    /* ---------- editor ---------- */
+    async function openEditor() {
+      const { segs } = fileCtx;
+      const st = $('stage');
+      st.className = 'stage';
+      st.replaceChildren(el('div', { class: 'empty', text: 'Завантаження…' }));
+      let r;
+      try { r = await fetchText(segs); }
+      catch (e) { if (fileCtx.segs === segs) noPreview('Не вдалося завантажити файл: ' + e.message); return; }
+      if (fileCtx.segs !== segs) return;
+
+      const ta = el('textarea', { spellcheck: 'false', 'aria-label': 'Вміст файлу' });
+      ta.value = r.text;
+      const status = el('span');
+      const pos = el('span');
+      S.editor = { segs, ta, original: r.text, etag: r.etag, saving: false, status };
+      const updateStatus = () => {
+        const dirty = ta.value !== S.editor.original;
+        status.className = dirty ? 'dirty' : '';
+        status.textContent = dirty ? '● Є незбережені зміни' : 'Збережено';
+        const before = ta.value.slice(0, ta.selectionStart);
+        pos.textContent = 'Рядок ' + (before.split('\n').length) + ' · ' + ta.value.length + ' симв. · Ctrl+S — зберегти';
+      };
+      ta.addEventListener('input', updateStatus);
+      ta.addEventListener('keyup', updateStatus);
+      ta.addEventListener('click', updateStatus);
+      ta.addEventListener('keydown', e => {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); saveEditor(); }
+        else if (e.key === 'Tab' && !e.shiftKey) {
+          e.preventDefault();
+          ta.setRangeText('\t', ta.selectionStart, ta.selectionEnd, 'end');
+          updateStatus();
+        }
+      });
+      st.className = 'stage editor';
+      st.replaceChildren(ta, el('div', { class: 'editor-status' }, status, pos));
+      if (fileCtx.type === 'md') {   // Markdown syntax reference, top-right of the editor
+        ta.classList.add('md');
+        const help = el('button', { class: 'md-help', type: 'button', onclick: () => openMdHelp(ta),
+          title: 'Шпаргалка з Markdown', 'aria-label': 'Шпаргалка з Markdown' });
+        help.innerHTML = iconHtml('info');
+        st.append(help);
+      }
+      if (r.encoding !== 'UTF-8') st.after(el('p', { class: 'note', text: 'Файл у кодуванні ' + r.encoding + '; буде збережено в UTF-8.' }));
+      updateStatus();
+      ta.focus();
+    }
+
+    /* ---------- built-in Markdown cheat sheet (Ukrainian) ---------- */
+    // show = what the user sees as the example, ins = what gets inserted, out = custom result (otherwise rendered by md())
+    const MD_CHEATS = [
+      { t: 'Заголовки', show: '# Заголовок 1\n## Заголовок 2\n### Заголовок 3', block: true },
+      { t: 'Виділення тексту', show: '**жирний**, *курсив*, ~~закреслений~~' },
+      { t: 'Код у рядку', show: 'Команда `ls -la`' },
+      { t: 'Блок коду', show: '```\nparam set BAT_CAPACITY 5000\n```', block: true },
+      { t: 'Список', show: '- пункт\n- пункт\n  - вкладений пункт', block: true },
+      { t: 'Нумерований список', show: '1. перший\n2. другий\n3. третій', block: true },
+      { t: 'Список завдань', show: '- [ ] зробити\n- [x] зроблено', block: true },
+      { t: 'Посилання', show: '[Назва сайту](https://example.com)' },
+      { t: 'Посилання на файл у сховищі', show: '[Схема підключення](схема.pdf)',
+        out: 'Відкриє «схема.pdf» з цієї ж папки у переглядачі. «../» — на рівень вище: [Звіт](../звіт.docx)' },
+      { t: 'Зображення', show: '![Опис фото](фото.jpg)', out: 'Покаже зображення «фото.jpg» з цієї ж папки.' },
+      { t: 'Цитата / примітка', show: '> **Увага!** Перевірте полярність.', block: true },
+      { t: 'Таблиця', show: '| Деталь | К-сть |\n|:-------|------:|\n| Гвинт  |     4 |\n| Гайка  |     4 |', block: true,
+        note: ':--- — по лівому краю, ---: — по правому, :---: — по центру' },
+      { t: 'Розділювач', show: '---', block: true },
+      { t: 'Новий рядок без нового абзацу', show: 'перший рядок··\nдругий рядок', ins: 'перший рядок  \nдругий рядок',
+        note: '·· — два пробіли в кінці рядка. Порожній рядок між текстом — новий абзац.' }
+    ];
+
+    function openMdHelp(ta) {
+      const back = el('div', { class: 'modal-back' });
+      const close = () => { document.removeEventListener('keydown', onKey, true); back.remove(); ta.focus(); };
+      const onKey = e => { if (e.key === 'Escape') { e.stopPropagation(); close(); } };
+      const insert = text => {
+        const start = ta.selectionStart, before = ta.value.slice(0, start);
+        const lead = before && !before.endsWith('\n') ? '\n' : '';
+        ta.setRangeText(lead + text, start, ta.selectionEnd, 'end');
+        ta.dispatchEvent(new Event('input'));
+        close();
+      };
+      const rows = MD_CHEATS.map(c => {
+        const ins = (c.ins || c.show) + (c.block ? '\n' : '');
+        const out = el('div', { class: 'cs-out md' });
+        if (c.out) out.textContent = c.out; else out.innerHTML = md(c.ins || c.show);   // render what actually gets inserted
+        return el('div', { class: 'cs-row' },
+          el('div', { class: 'cs-title', text: c.t }),
+          el('div', { class: 'cs-pair' },
+            el('button', { class: 'cs-src', type: 'button', title: 'Вставити в текст', onclick: () => insert(ins) }, el('pre', { text: c.show })),
+            out),
+          c.note ? el('div', { class: 'cs-note', text: c.note }) : null);
+      });
+      const box = el('div', { class: 'modal cheat', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'cs-h' },
+        el('div', { class: 'cs-head' },
+          el('h2', { id: 'cs-h', text: 'Шпаргалка з Markdown' }),
+          button('close', 'Закрити', 'btn-ghost', close, { iconOnly: true })),
+        el('p', { text: 'Ліворуч — що пишете, праворуч — що отримаєте. Натисніть приклад, щоб вставити його в текст.' }),
+        el('div', { class: 'cs-list' }, ...rows));
+      back.append(box);
+      back.addEventListener('click', e => { if (e.target === back) close(); });
+      document.addEventListener('keydown', onKey, true);
+      document.body.append(back);
+      box.querySelector('.cs-src').focus();
+    }
+
+    const editorDirty = () => !!(S.editor && S.editor.ta.value !== S.editor.original);
+
+    async function saveEditor() {
+      const ed = S.editor;
+      if (!ed || ed.saving) return;
+      ed.saving = true;
+      try {
+        // conflict check: was the file changed by someone else since we opened it?
+        const head = await fetch(pathOf(ed.segs), { method: 'HEAD', cache: 'no-store' }).catch(() => null);
+        const curTag = head && head.ok ? head.headers.get('etag') : null;
+        if (ed.etag && curTag && curTag !== ed.etag &&
+            !confirm('Файл було змінено кимось іншим після відкриття. Перезаписати їхні зміни?')) return;
+        const text = ed.ta.value;
+        const res = await fetch(pathOf(ed.segs), { method: 'PUT', body: new Blob([text], { type: 'text/plain;charset=utf-8' }) });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        ed.original = text;
+        const after = await fetch(pathOf(ed.segs), { method: 'HEAD', cache: 'no-store' }).catch(() => null);
+        ed.etag = after && after.ok ? after.headers.get('etag') : null;
+        ed.ta.dispatchEvent(new Event('input'));
+        toast('Збережено');
+      } catch (e) {
+        alert('Не вдалося зберегти: ' + e.message);
+      } finally {
+        ed.saving = false;
+      }
+    }
+
+    function closeEditor() {
+      navigate(viewHref(fileCtx.segs));
+    }
+
+    /* ---------- uploads ---------- */
+    const uploads = [];
+    let uploadSeq = 0;
+    let paintTimer = null;
+
+    /* ---------- overwrite check ---------- */
+    // Ask before an upload replaces files that already exist in the target folder(s).
+    async function uploadItems(items, segs) {
+      if (!S.canWrite) return;
+      const norm = items.map(it => it instanceof File ? { file: it, rel: [] } : it);
+      const files = norm.filter(it => !it.dir);
+      // group by destination folder, fetch its listing once
+      const groups = new Map();
+      for (const it of files) {
+        const key = it.rel.join('/');
+        if (!groups.has(key)) groups.set(key, { rel: it.rel, items: [] });
+        groups.get(key).items.push(it);
+      }
+      const conflicts = [];
+      for (const g of groups.values()) {
+        g.names = await listNames(segs.concat(g.rel));
+        for (const it of g.items) if (g.names.has(it.file.name)) conflicts.push(it);
+      }
+      if (conflicts.length) {
+        const choice = await askOverwrite(conflicts, segs);
+        if (!choice) return;
+        if (choice === 'skip') {
+          const skip = new Set(conflicts);
+          const rest = norm.filter(it => !skip.has(it));
+          if (!rest.length) { toast('Нічого не завантажено — всі файли вже є'); return; }
+          return enqueue(rest, segs);
+        }
+        if (choice === 'rename') {
+          for (const g of groups.values()) {
+            const taken = new Set(g.names);
+            g.items.forEach(it => { if (!g.names.has(it.file.name)) taken.add(it.file.name); });
+            for (const it of g.items) {
+              if (!g.names.has(it.file.name)) continue;
+              it.name = freeName(it.file.name, taken);
+              taken.add(it.name);
+            }
+          }
+        }
+        // 'replace' → upload as is (PUT overwrites)
+      }
+      enqueue(norm, segs);
+    }
+
+    async function listNames(segs) {
+      try {
+        const d = await getJson(dirHref(segs) + '?json');
+        return new Set((d.paths || []).map(p => p.name));
+      } catch (_) {
+        return new Set();   // folder does not exist yet → nothing to overwrite
+      }
+    }
+
+    function freeName(name, taken) {
+      const dot = name.lastIndexOf('.');
+      const base = dot > 0 ? name.slice(0, dot) : name;
+      const ext = dot > 0 ? name.slice(dot) : '';
+      for (let n = 1; ; n++) {
+        const cand = base + ' (' + n + ')' + ext;
+        if (!taken.has(cand)) return cand;
+      }
+    }
+
+    function askOverwrite(conflicts, segs) {
+      return new Promise(resolve => {
+        const MAX = 30;
+        const n = conflicts.length;
+        const list = el('ul', {}, ...conflicts.slice(0, MAX).map(it => el('li', {},
+          el('span', { text: it.file.name }),
+          it.rel.length ? el('small', { text: '/' + segs.concat(it.rel).join('/') } ) : null)));
+        if (n > MAX) list.append(el('li', { text: '…і ще ' + (n - MAX) }));
+        const back = el('div', { class: 'modal-back' });
+        const done = choice => { document.removeEventListener('keydown', onKey, true); back.remove(); resolve(choice); };
+        const onKey = e => { if (e.key === 'Escape') { e.stopPropagation(); done(null); } };
+        const box = el('div', { class: 'modal', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'ow-title' },
+          el('h2', { id: 'ow-title', text: n === 1 ? 'Файл уже існує' : 'Файли вже існують (' + n + ')' }),
+          el('p', { text: (n === 1 ? 'У папці ' + folderLabel(segs.concat(conflicts[0].rel)) + ' уже є файл з такою назвою.' : 'У цільових папках уже є файли з такими назвами.') + ' Що зробити?' }),
+          list,
+          el('div', { class: 'choices' },
+            button('replace', 'Замінити', 'btn-danger', () => done('replace')),
+            button('content_copy', 'Зберегти обидва', 'btn-primary', () => done('rename'), { title: 'Нові файли отримають назву на кшталт «назва (1).pdf»' }),
+            button('skip', 'Пропустити', 'btn-soft', () => done('skip'), { title: 'Завантажити лише нові файли' }),
+            button('close', 'Скасувати', 'btn-soft', () => done(null))));
+        back.append(box);
+        back.addEventListener('click', e => { if (e.target === back) done(null); });
+        document.addEventListener('keydown', onKey, true);
+        document.body.append(back);
+        box.querySelector('.btn-primary').focus();
+      });
+    }
+
+    // items: File[] (go into segs) or [{ file, rel: [subdir…] }] / [{ dir: true, rel: [...] }] from dropped folders
+    function enqueue(items, segs) {
+      if (!S.canWrite) return;
+      if (!uploads.some(u => u.status === 'uploading' || u.status === 'queued')) madeDirs.clear();
+      for (const it of items) {
+        if (it.dir) continue;   // empty folders handled below
+        const file = it instanceof File ? it : it.file;
+        const rel = it instanceof File ? [] : it.rel;
+        const u = {
+          id: ++uploadSeq, file, segs: segs.concat(rel), isDir: false, name: it.name || file.name, total: file.size,
+          status: 'queued', loaded: 0, samples: [], speed: 0, error: '', xhr: null
+        };
+        uploads.push(u);
+        $('up-list').appendChild(createUploadRow(u));
+      }
+      // empty folders: create them (one quiet task per folder)
+      for (const it of items) {
+        if (!it.dir) continue;
+        const u = { id: ++uploadSeq, file: null, segs: segs.concat(it.rel), isDir: true, name: it.rel[it.rel.length - 1] + '/',
+          total: 0, status: 'queued', loaded: 0, samples: [], speed: 0, error: '', xhr: null };
+        uploads.push(u);
+        $('up-list').appendChild(createUploadRow(u));
+      }
+      $('uploads').classList.remove('hidden');
+      document.body.classList.add('has-uploads');
+      paintAll();
+      pump();
+    }
+    function pump() {
+      if (uploads.some(u => u.status === 'uploading')) return;
+      const next = uploads.find(u => u.status === 'queued');
+      if (next) startUpload(next);
+    }
+    // dufs PUT needs the parent folder to exist → create missing folders first (for dropped folders)
+    const madeDirs = new Set();
+    async function ensureDir(segs) {
+      for (let i = 1; i <= segs.length; i++) {
+        const sub = segs.slice(0, i), key = sub.join('/');
+        if (madeDirs.has(key)) continue;
+        if (!(await exists(sub))) {
+          const r = await fetch(pathOf(sub), { method: 'MKCOL' });
+          if (!r.ok && !(await exists(sub))) throw new Error('не вдалося створити папку «' + key + '»');
+        }
+        madeDirs.add(key);
+      }
+    }
+    async function startUpload(u) {
+      u.status = 'uploading';
+      u.loaded = 0;
+      u.samples = [{ t: performance.now(), l: 0 }];
+      paintAll();
+      try { await ensureDir(u.segs); }
+      catch (e) { u.status = 'error'; u.error = e.message; paintAll(); pump(); return; }
+      if (u.status !== 'uploading') { pump(); return; }   // cancelled while preparing
+      if (u.isDir) { finishDirOnly(u); return; }
+      const xhr = new XMLHttpRequest();
+      u.xhr = xhr;
+      xhr.open('PUT', pathOf(u.segs.concat(u.name)));
+      xhr.upload.onprogress = e => {
+        if (!e.lengthComputable) return;
+        u.loaded = e.loaded;
+        u.samples.push({ t: performance.now(), l: e.loaded });
+        paintSoon();
+      };
+      const finish = (status, error = '') => {
+        if (u.status !== 'uploading') return;
+        u.status = status;
+        u.error = error;
+        u.xhr = null;
+        if (status === 'done') {
+          u.loaded = u.total;
+          refreshAfterUpload(u);
+          loadDisk();
+        }
+        paintAll();
+        pump();
+      };
+      xhr.onload = () => (xhr.status >= 200 && xhr.status < 300)
+        ? finish('done') : finish('error', xhr.status === 403 ? 'Немає прав на запис' : 'Сервер відповів ' + xhr.status);
+      xhr.onerror = () => finish('error', 'Немає зв’язку з сервером');
+      xhr.ontimeout = () => finish('error', 'Час очікування вичерпано');
+      xhr.onabort = () => finish('cancelled');
+      xhr.send(u.file);
+      paintAll();
+    }
+    function cancelUpload(u) {
+      if (u.status === 'uploading' && u.xhr) u.xhr.abort();
+      else if (u.status === 'queued' || u.status === 'uploading') { u.status = 'cancelled'; paintAll(); }
+    }
+    let refreshTimer = null;
+    function refreshAfterUpload(u) {
+      // refresh if the upload landed in the current folder or anywhere below it
+      const cur = S.segs.join('/'), dest = u.segs.join('/');
+      if (S.mode !== 'dir' || !(dest === cur || cur === '' || dest.startsWith(cur + '/'))) return;
+      clearTimeout(refreshTimer);
+      refreshTimer = setTimeout(loadDir, 300);
+    }
+    function finishDirOnly(u) {   // empty folder from a dropped folder tree: ensureDir already created it
+      u.status = 'done';
+      refreshAfterUpload(u);
+      paintAll();
+      pump();
+    }
+    function retryUpload(u) { u.status = 'queued'; u.loaded = 0; u.error = ''; paintAll(); pump(); }
+    function hideUploadsIfEmpty() {
+      if (!uploads.length) {
+        $('uploads').classList.add('hidden');
+        document.body.classList.remove('has-uploads');
+      }
+    }
+    function removeUpload(u) {
+      const i = uploads.indexOf(u);
+      if (i >= 0) uploads.splice(i, 1);
+      u.ui.row.remove();
+      hideUploadsIfEmpty();
+      paintAll();
+    }
+    function createUploadRow(u) {
+      const fill = el('div', { class: 'up-fill' });
+      const info = el('div', { class: 'up-info' });
+      const btn = el('button', { class: 'btn btn-ghost btn-icon', type: 'button' });
+      btn.addEventListener('click', () => {
+        if (u.status === 'queued' || u.status === 'uploading') cancelUpload(u);
+        else if (u.status === 'error' || u.status === 'cancelled') retryUpload(u);
+        else removeUpload(u);
+      });
+      const row = el('div', { class: 'up-item' },
+        el('div', { class: 'up-main' },
+          el('div', { class: 'up-name', text: u.name }),
+          el('div', { class: 'up-dest', text: u.isDir ? 'нова папка в «/' + u.segs.slice(0, -1).join('/') + '»' : 'у «/' + u.segs.join('/') + '»' }),
+          el('div', { class: 'up-bar' }, fill),
+          info),
+        btn);
+      u.ui = { row, fill, info, btn };
+      return row;
+    }
+    function currentSpeed(u, now) {
+      const s = u.samples;
+      while (s.length > 2 && now - s[0].t > 4000) s.shift();
+      const first = s[0];
+      const dt = (now - first.t) / 1000;
+      return dt > 0.4 ? Math.max(0, (u.loaded - first.l) / dt) : u.speed;
+    }
+    function paintUpload(u, now) {
+      const { row, fill, info, btn } = u.ui;
+      row.className = 'up-item ' + u.status;
+      const pct = u.total ? Math.min(100, u.loaded / u.total * 100) : (u.status === 'done' ? 100 : 0);
+      fill.style.width = (u.status === 'done' ? 100 : pct) + '%';
+      let text = '', btnIcon = 'close', btnTitle = 'Скасувати';
+      if (u.status === 'queued') text = 'У черзі · ' + formatSize(u.total);
+      else if (u.status === 'uploading') {
+        u.speed = currentSpeed(u, now);
+        const left = u.total - u.loaded;
+        text = formatSize(u.loaded) + ' з ' + formatSize(u.total) + ' · ' + Math.floor(pct) + '%'
+          + ' · ' + formatSize(u.speed) + '/с' + (u.speed > 0 ? ' · ~' + formatEta(left / u.speed) : '');
+      } else if (u.status === 'done') { text = 'Готово · ' + formatSize(u.total); btnIcon = 'check'; btnTitle = 'Прибрати зі списку'; }
+      else if (u.status === 'error') { text = 'Помилка: ' + u.error; btnIcon = 'replay'; btnTitle = 'Повторити'; }
+      else { text = 'Скасовано'; btnIcon = 'replay'; btnTitle = 'Повторити'; }
+      info.textContent = text;
+      if (btn.dataset.icon !== btnIcon) { setBtn(btn, btnIcon, ''); btn.dataset.icon = btnIcon; }
+      btn.title = btnTitle;
+      btn.setAttribute('aria-label', btnTitle);
+    }
+    function paintSummary(now) {
+      const live = uploads.filter(u => u.status === 'uploading' || u.status === 'queued');
+      const active = uploads.find(u => u.status === 'uploading');
+      const doneCount = uploads.filter(u => u.status === 'done').length;
+      if (live.length) {
+        const totalBytes = live.reduce((s, u) => s + u.total, 0);
+        const doneBytes = live.reduce((s, u) => s + (u.status === 'uploading' ? u.loaded : 0), 0);
+        const pct = totalBytes ? Math.floor(doneBytes / totalBytes * 100) : 0;
+        const speed = active ? currentSpeed(active, now) : 0;
+        const left = totalBytes - doneBytes;
+        $('up-title').textContent = 'Завантаження: ' + live.length + (live.length === 1 ? ' файл' : ' файлів');
+        $('up-detail').textContent = formatSize(doneBytes) + ' з ' + formatSize(totalBytes) + ' · ' + pct + '%'
+          + (speed > 0 ? ' · ' + formatSize(speed) + '/с · ~' + formatEta(left / speed) : '');
+      } else {
+        $('up-title').textContent = 'Завершено: ' + doneCount;
+        $('up-detail').textContent = '';
+      }
+      $('up-clear').disabled = !uploads.some(u => u.status === 'done' || u.status === 'cancelled');
+    }
+    function paintAll() {
+      paintTimer = null;
+      const now = performance.now();
+      uploads.forEach(u => paintUpload(u, now));
+      paintSummary(now);
+    }
+    function paintSoon() { if (!paintTimer) paintTimer = setTimeout(paintAll, 250); }
+
+    setBtn($('up-clear'), 'clear_all', '');
+    $('up-clear').addEventListener('click', () => {
+      for (let i = uploads.length - 1; i >= 0; i--) {
+        if (uploads[i].status === 'done' || uploads[i].status === 'cancelled') { uploads[i].ui.row.remove(); uploads.splice(i, 1); }
+      }
+      hideUploadsIfEmpty();
+      paintAll();
+    });
+    const toggleBtn = $('up-toggle');
+    const syncToggle = () => setBtn(toggleBtn, $('uploads').classList.contains('collapsed') ? 'expand_less' : 'expand_more', '');
+    syncToggle();
+    toggleBtn.addEventListener('click', () => { $('uploads').classList.toggle('collapsed'); syncToggle(); });
+    setInterval(() => { if (uploads.some(u => u.status === 'uploading')) paintAll(); }, 500);
+
+    /* ---------- routing ---------- */
+    function parseLocation() {
+      S.segs = location.pathname.split('/').filter(Boolean).map(decodeSeg);
+      S.mode = new URLSearchParams(location.search).has('view') && S.segs.length ? 'file' : 'dir';
+    }
+
+    function render() {
+      parseLocation();
+      S.editor = null;
+      revokeBlobs();
+      closePdf();
+      document.querySelectorAll('.note').forEach(n => n.remove());
+      const isFile = S.mode === 'file';
+      document.body.classList.toggle('mode-file', isFile);
+      $('dir-view').classList.toggle('hidden', isFile);
+      $('file-view').classList.toggle('hidden', !isFile);
+      // stop media playing from the previous page
+      $('stage').querySelectorAll('video,audio').forEach(m => { m.pause(); m.removeAttribute('src'); m.load(); });
+      if (isFile) showFile();
+      else {
+        $('search').value = '';
+        S.searchResults = null;
+        showDir();
+      }
+      window.scrollTo(0, 0);
+    }
+
+    function navigate(href, replace) {
+      const url = new URL(href, location.href);
+      if (url.pathname + url.search + url.hash === location.pathname + location.search + location.hash) return;
+      if (editorDirty() && !confirm('Є незбережені зміни. Вийти без збереження?')) return;
+      history[replace ? 'replaceState' : 'pushState'](null, '', url.pathname + url.search + url.hash);
+      render();
+    }
+
+    document.addEventListener('click', e => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const a = e.target.closest('a');
+      if (!a || a.target === '_blank' || a.hasAttribute('download')) return;
+      const url = new URL(a.href, location.href);
+      if (url.origin !== location.origin) return;
+      if (a.hasAttribute('data-spa')) {
+        e.preventDefault();
+        navigate(url.pathname + url.search + url.hash);
+        return;
+      }
+      // links inside rendered markdown: open vault files in the viewer, folders in the browser
+      if (a.closest('.md') && !url.search) {
+        e.preventDefault();
+        if (url.hash && url.pathname === location.pathname) { location.hash = url.hash; return; }
+        navigate(url.pathname.endsWith('/') ? url.pathname : url.pathname + '?view');
+      }
+    });
+
+    window.addEventListener('popstate', () => {
+      if (editorDirty() && !confirm('Є незбережені зміни. Вийти без збереження?')) {
+        // stay: restore editor URL
+        history.pushState(null, '', editHref(S.editor.segs));
+        return;
+      }
+      render();
+    });
+    window.addEventListener('beforeunload', e => {
+      if (editorDirty() || uploads.some(u => u.status === 'uploading' || u.status === 'queued')) { e.preventDefault(); e.returnValue = ''; }
+    });
+
+    document.addEventListener('keydown', e => {
+      if (S.mode !== 'file' || S.editor || !fileCtx) return;
+      const tag = (e.target.tagName || '').toLowerCase();
+      if (tag === 'input' || tag === 'textarea' || tag === 'video' || tag === 'audio' || e.ctrlKey || e.metaKey || e.altKey) return;
+      const { siblings, idx, segs } = fileCtx;
+      if (e.key === 'Escape') navigate(dirHref(segs.slice(0, -1)));
+      else if (siblings.length > 1 && idx >= 0 && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+        const n = siblings[(idx + (e.key === 'ArrowLeft' ? -1 : 1) + siblings.length) % siblings.length];
+        navigate(viewHref(segs.slice(0, -1).concat(n.name)));
+      }
+    });
+
+    /* ---------- login / logout ---------- */
+    // Cookie docs_auth=1 = "writer mode" for the proxy in front of dufs:
+    // without it everyone is an anonymous reader (proxy strips credentials);
+    // with it the proxy requires a login (the browser's own login dialog).
+    const setWriterMode = on => { document.cookie = 'docs_auth=' + (on ? '1; max-age=31536000' : '; max-age=0') + '; path=/; SameSite=Lax'; };
+
+    function login() {
+      setWriterMode(true);
+      // fresh ?login=… → the browser treats it as a new page and shows its login dialog
+      const u = new URL(location.href);
+      u.searchParams.set('login', Date.now());
+      location.replace(u.href);
+    }
+
+    function logout() {
+      const busy = uploads.some(u => u.status === 'uploading' || u.status === 'queued');
+      if (busy && !confirm('Завантаження ще тривають і будуть перервані. Вийти?')) return;
+      if (editorDirty() && !confirm('Є незбережені зміни. Вийти без збереження?')) return;
+      if (S.editor) S.editor.original = S.editor.ta.value;   // suppress beforeunload prompt
+      uploads.forEach(u => { if (u.xhr) u.xhr.abort(); u.status = 'cancelled'; });
+      setWriterMode(false);
+      location.reload();   // same page, now as an anonymous reader
+    }
+
+    /* ---------- folder toolbar + drag & drop ---------- */
+    $('search-icon').innerHTML = iconHtml('search');
+    setBtn($('upload-btn'), 'upload', 'Завантажити');
+    setBtn($('note-btn'), 'note_add', 'Нотатка');
+    setBtn($('mkdir-btn'), 'create_new_folder', 'Папка');
+    setBtn($('logout-btn'), 'logout', '');
+    setBtn($('login-btn'), 'login', 'Увійти');
+    $('login-btn').addEventListener('click', login);
+    $('logout-btn').addEventListener('click', logout);
+    $('upload-btn').addEventListener('click', () => $('file-input').click());
+    $('note-btn').addEventListener('click', newNote);
+    $('mkdir-btn').addEventListener('click', makeFolder);
+    $('file-input').addEventListener('change', () => {
+      const fi = $('file-input');
+      if (fi.files.length) uploadItems(Array.from(fi.files), S.segs);
+      fi.value = '';
+    });
+    $('search').addEventListener('input', onSearchInput);
+    $('deep').addEventListener('change', onSearchInput);
+    $('sort').addEventListener('change', () => { localStorage.setItem('docs.sort', $('sort').value); renderList(); });
+    try { const s = localStorage.getItem('docs.sort'); if (s) $('sort').value = s; } catch (_) {}
+
+    /* drag & drop:
+       - files/folders from the computer → onto a folder row / path item (or anywhere in the folder view = current folder)
+       - rows already in the list → onto a folder row / path item = move */
+    const MOVE_TYPE = 'application/x-docs-move';
+    const dtTypes = e => Array.from((e.dataTransfer && e.dataTransfer.types) || []);
+    const isInternal = e => dtTypes(e).includes(MOVE_TYPE);
+    const isExternal = e => !isInternal(e) && dtTypes(e).includes('Files');
+    const folderLabel = segs => segs.length ? '«' + segs[segs.length - 1] + '»' : '«Головна»';
+    let dropEl = null;
+
+    function clearDrag() {
+      if (dropEl) dropEl.classList.remove('drop-target');
+      dropEl = null;
+      $('drop-hint').classList.add('hidden');
+    }
+    function targetOf(e) {
+      const t = e.target.closest && e.target.closest('[data-drop]');
+      if (t) return { node: t, segs: JSON.parse(t.dataset.drop) };
+      if (S.mode === 'dir' && isExternal(e)) return { node: null, segs: S.segs };   // page = current folder
+      return null;
+    }
+
+    document.addEventListener('dragover', e => {
+      if (!S.canWrite || !(isExternal(e) || isInternal(e))) return;
+      const tgt = targetOf(e);
+      if (!tgt) { if (dropEl) clearDrag(); return; }
+      e.preventDefault();
+      e.dataTransfer.dropEffect = isInternal(e) ? 'move' : 'copy';
+      if (dropEl !== tgt.node) {
+        if (dropEl) dropEl.classList.remove('drop-target');
+        dropEl = tgt.node;
+        if (dropEl) dropEl.classList.add('drop-target');
+      }
+      if (isExternal(e)) {
+        $('drop-label').textContent = 'Завантажити в ' + folderLabel(tgt.segs);
+        $('drop-hint').classList.remove('hidden');
+      }
+    });
+    document.addEventListener('dragleave', e => {
+      // left the window entirely
+      if (!e.relatedTarget || e.relatedTarget === document.documentElement) clearDrag();
+    });
+    document.addEventListener('drop', e => {
+      const internal = isInternal(e), external = isExternal(e);
+      const tgt = (internal || external) && S.canWrite ? targetOf(e) : null;
+      const raw = internal ? e.dataTransfer.getData(MOVE_TYPE) : '';
+      // directory entries must be grabbed synchronously, before any await
+      const entries = external ? Array.from(e.dataTransfer.items || []).map(i => i.webkitGetAsEntry && i.webkitGetAsEntry()) : [];
+      const files = external ? Array.from(e.dataTransfer.files) : [];
+      clearDrag();
+      if (!tgt) return;
+      e.preventDefault();
+      if (internal) {
+        try { moveInto(JSON.parse(raw), tgt.segs); } catch (_) {}
+      } else {
+        collectDropped(entries, files).then(items => { if (items.length) uploadItems(items, tgt.segs); });
+      }
+    });
+
+    /* paste (Ctrl+V / ⌘V) in a folder → upload clipboard files there */
+    function clipboardFiles(cd) {
+      let files = Array.from((cd && cd.files) || []);
+      if (!files.length) files = Array.from((cd && cd.items) || []).filter(i => i.kind === 'file').map(i => i.getAsFile()).filter(Boolean);
+      return files;
+    }
+    document.addEventListener('paste', e => {
+      if (!S.canWrite || S.mode !== 'dir') return;
+      const t = e.target, tag = ((t && t.tagName) || '').toLowerCase();
+      if (tag === 'input' || tag === 'textarea' || (t && t.isContentEditable) || document.querySelector('.modal-back')) return;
+      const files = clipboardFiles(e.clipboardData);
+      if (!files.length) return;
+      e.preventDefault();
+      // screenshots / copied images arrive as "image.png" → give them a readable, unique name
+      const d = new Date(), p2 = n => String(n).padStart(2, '0');
+      const stamp = d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()) + ' ' + p2(d.getHours()) + '-' + p2(d.getMinutes()) + '-' + p2(d.getSeconds());
+      let n = 0;
+      const named = files.map(f => /^image\.(png|jpe?g|gif|webp|bmp)$/i.test(f.name)
+        ? new File([f], 'Знімок ' + stamp + (files.length > 1 ? ' (' + (++n) + ')' : '') + '.' + extOf(f.name), { type: f.type, lastModified: Date.now() })
+        : f);
+      uploadItems(named, S.segs);
+    });
+
+    async function moveInto(src, targetSegs) {
+      const name = src.segs[src.segs.length - 1];
+      const from = src.segs.join('/'), to = targetSegs.join('/');
+      if (to === src.segs.slice(0, -1).join('/') || to === from) return;   // already there / onto itself
+      if (src.dir && to.startsWith(from + '/')) { toast('Не можна перемістити папку всередину себе'); return; }
+      const dest = targetSegs.concat(name);
+      if (await exists(dest)) { alert('У папці ' + folderLabel(targetSegs) + ' вже є «' + name + '»'); return; }
+      const res = await fetch(pathOf(src.segs), { method: 'MOVE', headers: { 'Destination': location.origin + pathOf(dest) } }).catch(() => null);
+      if (!res || !res.ok) { alert('Не вдалося перемістити' + (res ? ' (статус ' + res.status + ')' : '')); return; }
+      madeDirs.clear();
+      toast('«' + name + '» → ' + folderLabel(targetSegs));
+      if (S.mode === 'dir') loadDir();
+    }
+
+    // turn dropped items into upload items, walking dropped folders recursively
+    async function collectDropped(entries, files) {
+      if (!entries.length || !entries.some(en => en && en.isDirectory)) return files;
+      const out = [];
+      const readAll = reader => new Promise((resolve, reject) => {
+        const acc = [];
+        const step = () => reader.readEntries(batch => { if (!batch.length) resolve(acc); else { acc.push(...batch); step(); } }, reject);
+        step();
+      });
+      const fileOf = en => new Promise((resolve, reject) => en.file(resolve, reject));
+      async function walk(en, rel) {
+        if (en.isFile) { out.push({ file: await fileOf(en), rel }); return; }
+        const children = await readAll(en.createReader());
+        const sub = rel.concat(en.name);
+        if (!children.length) out.push({ dir: true, rel: sub });
+        for (const c of children) await walk(c, sub);
+      }
+      try {
+        for (const en of entries) if (en) await walk(en, []);
+      } catch (err) {
+        alert('Не вдалося прочитати перетягнуту папку: ' + err.message);
+        return [];
+      }
+      return out;
+    }
+
+    /* ---------- floating "back to top" ---------- */
+    setBtn($('to-top'), 'arrow_upward', '');
+    $('to-top').addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    let topTick = false;
+    window.addEventListener('scroll', () => {
+      if (topTick) return;
+      topTick = true;
+      requestAnimationFrame(() => { topTick = false; $('to-top').classList.toggle('hidden', window.scrollY < 500); });
+    }, { passive: true });
+
+    /* ---------- start ---------- */
+    // drop the one-time ?login=… parameter (see login()) from the address bar
+    if (new URLSearchParams(location.search).has('login')) {
+      const u = new URL(location.href);
+      u.searchParams.delete('login');
+      history.replaceState(null, '', u.pathname + u.search + u.hash);
+    }
+    // arrived here from the proxy's "not found" page → say what was missing
+    try {
+      const miss = sessionStorage.getItem('docs.missing');
+      if (miss) { sessionStorage.removeItem('docs.missing'); setTimeout(() => toast('Не знайдено: ' + miss, 4500), 300); }
+    } catch (_) {}
+    (async () => {
+      render();
+      if (await loadDisk()) setInterval(loadDisk, 60000);
+    })();
+  </script>
+</body>
+</html>

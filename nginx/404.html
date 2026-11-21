@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Не знайдено — Документація</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%233b82f6'/%3E%3Cpath d='M9 6h9.5l5.5 5.5V25a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z' fill='%23fff'/%3E%3Cpath d='M18.5 6v5.5H24z' fill='%23bfdbfe'/%3E%3Cpath d='M11.5 15.5h9M11.5 19h9M11.5 22.5h5.5' stroke='%233b82f6' stroke-width='1.7' stroke-linecap='round'/%3E%3C/svg%3E">
+  <style>
+    :root { --bg:#f5f7fa; --surface:#fff; --text:#1f2937; --muted:#6b7280; --accent:#3b82f6; }
+    @media (prefers-color-scheme: dark) { :root { --bg:#0f172a; --surface:#1e293b; --text:#e2e8f0; --muted:#94a3b8; } }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text);
+      min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    main { width: min(420px, 100%); background: var(--surface); border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,.1);
+      padding: 28px 24px; text-align: center; display: flex; flex-direction: column; gap: 12px; }
+    h1 { font-size: 20px; }
+    p { color: var(--muted); line-height: 1.5; overflow-wrap: anywhere; }
+    a { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Не знайдено</h1>
+    <p id="path"></p>
+    <p id="msg">Переходжу до найближчої наявної папки…</p>
+    <p><a href="/">На головну</a></p>
+  </main>
+  <script>
+    // Served by the proxy for any 404: walk up the path and redirect to the deepest folder that exists.
+    // The vault page then shows "Не знайдено: …" (passed via sessionStorage).
+    const segs = location.pathname.split('/').filter(Boolean);
+    let missing = location.pathname;
+    try { missing = decodeURIComponent(missing); } catch (_) {}
+    document.getElementById('path').textContent = missing;
+    (async () => {
+      for (let k = segs.length - 1; k >= 0; k--) {
+        const dir = k ? '/' + segs.slice(0, k).join('/') + '/' : '/';
+        try {
+          const r = await fetch(dir + '?json', { cache: 'no-store' });
+          if (!r.ok) continue;
+          const d = await r.json();
+          if (d.dir_exists === false) continue;
+          try { sessionStorage.setItem('docs.missing', missing); } catch (_) {}
+          location.replace(dir);
+          return;
+        } catch (_) {}
+      }
+      document.getElementById('msg').textContent = 'Не вдалося знайти жодної наявної папки.';
+    })();
+  </script>
+</body>
+</html>

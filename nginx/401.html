@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Вхід не виконано — Документація</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%233b82f6'/%3E%3Cpath d='M9 6h9.5l5.5 5.5V25a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z' fill='%23fff'/%3E%3Cpath d='M18.5 6v5.5H24z' fill='%23bfdbfe'/%3E%3Cpath d='M11.5 15.5h9M11.5 19h9M11.5 22.5h5.5' stroke='%233b82f6' stroke-width='1.7' stroke-linecap='round'/%3E%3C/svg%3E">
+  <style>
+    :root { --bg:#f5f7fa; --surface:#fff; --text:#1f2937; --muted:#6b7280; --accent:#3b82f6; }
+    @media (prefers-color-scheme: dark) { :root { --bg:#0f172a; --surface:#1e293b; --text:#e2e8f0; --muted:#94a3b8; } }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text);
+      min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    main { width: min(420px, 100%); background: var(--surface); border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,.1);
+      padding: 28px 24px; display: flex; flex-direction: column; gap: 14px; }
+    .head { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+    svg { width: 48px; height: 48px; fill: var(--accent); }
+    h1 { font-size: 21px; }
+    p, li { color: var(--muted); line-height: 1.5; }
+    ol { padding-left: 1.3em; display: flex; flex-direction: column; gap: 6px; }
+    b { color: var(--text); }
+    button { min-height: 52px; border: 0; border-radius: 12px; background: var(--accent); color: #fff;
+      font: inherit; font-size: 18px; font-weight: 600; cursor: pointer; }
+    .alt { text-align: center; }
+    .alt a { color: var(--muted); font-size: 15px; }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="head">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+      <h1>Вхід не виконано</h1>
+      <p>Вікно входу закрито або логін чи пароль невірні.</p>
+    </div>
+    <p><b>Щоб спробувати знову:</b></p>
+    <ol>
+      <li>Натисніть <b>«Спробувати ще раз»</b> — з’явиться вікно входу. Введіть логін і пароль.</li>
+      <li>Якщо вікно не з’являється (буває у Firefox на телефоні) — <b>закрийте цю вкладку</b>, відкрийте адресу знову в новій вкладці.</li>
+    </ol>
+    <button id="retry" type="button">Спробувати ще раз</button>
+    <p class="alt"><a href="#" id="anon">Переглядати без входу</a></p>
+  </main>
+  <script>
+    // Retry = load the same address with a fresh ?login=… so the browser treats it as a new page
+    // and shows its login dialog again (the main page strips the parameter after loading).
+    document.getElementById('retry').addEventListener('click', () => {
+      const u = new URL(location.href);
+      u.searchParams.set('login', Date.now());
+      location.replace(u.href);
+    });
+    // Leave "writer mode": without the docs_auth cookie the proxy serves everyone read-only.
+    document.getElementById('anon').addEventListener('click', e => {
+      e.preventDefault();
+      document.cookie = 'docs_auth=; max-age=0; path=/; SameSite=Lax';
+      const u = new URL(location.href);
+      u.searchParams.delete('login');
+      location.replace(u.href);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+#!/bin/sh
+# console greeting with the vault address
+ip=$(ip -4 -o addr show scope global 2>/dev/null | awk '{print $4}' | cut -d/ -f1 | head -n1)
+port=$(sed -n 's/^VAULT_PORT=//p' /opt/docs-vault/.env 2>/dev/null)
+[ "${port:-80}" = 80 ] && suffix="" || suffix=":$port"
+cat > /etc/issue <<EOT
+
+  docs-vault  (\n)
+
+  Web:  http://${ip:-<no network yet>}${suffix}/
+  VPN client QR code / config:  vault-peer <name>
+  Settings: /opt/docs-vault/.env    Data: /srv/vault/data
+
+EOT

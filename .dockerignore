@@ -1,0 +1,8 @@
+*.tar.gz
+wireguard/
+state/
+.env
+build/
+dist/
+iso/
+.git/

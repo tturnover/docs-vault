@@ -1,0 +1,9 @@
+
+docs-vault appliance
+  status:        rc-service docs-vault status ; docker ps
+  restart:       rc-service docs-vault restart
+  settings:      /opt/docs-vault/.env  (restart after changes)
+  documents:     /srv/vault/data
+  VPN clients:   vault-peer <name>
+  updates:       apk update && apk upgrade
+

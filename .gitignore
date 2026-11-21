@@ -1,0 +1,5 @@
+.env
+wireguard/
+*.tar.gz
+build/
+dist/

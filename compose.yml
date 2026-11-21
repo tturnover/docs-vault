@@ -1,0 +1,67 @@
+# Documentation vault + WireGuard VPN.
+#   docker compose --env-file .env up -d --build
+#   (VPN only when COMPOSE_PROFILES=vpn is set in .env)
+#
+# vault      : web UI on host port ${VAULT_PORT} (LAN, and Caddy for the public https name)
+# wireguard  : VPN; clients reach the vault at http://vault.vpn/ (or http://10.213.77.10/).
+#              Only the vault network is routed through the tunnel (split tunnel).
+
+services:
+  vault:
+    image: docs-vault:1
+    build: .
+    container_name: docs-vault
+    restart: unless-stopped
+    environment:
+      VAULT_USER: ${VAULT_USER:?set in .env}
+      VAULT_PASS: ${VAULT_PASS:?set in .env}
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-100}
+      VAULT_TRUSTED_PROXIES: ${VAULT_TRUSTED_PROXIES:-}
+    volumes:
+      - ${VAULT_DATA:?set in .env}:/data
+      - vault-state:/state
+    ports:
+      - "${VAULT_PORT:-4012}:80"
+    networks:
+      vaultnet:
+        ipv4_address: 10.213.77.10
+        aliases: [vault.vpn]
+
+  wireguard:
+    image: lscr.io/linuxserver/wireguard:${WG_IMAGE_TAG:-latest}
+    profiles: [vpn]                         # enabled with COMPOSE_PROFILES=vpn in .env
+    container_name: docs-vault-wg
+    restart: unless-stopped
+    cap_add: [NET_ADMIN]
+    environment:
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-100}
+      TZ: ${TZ:-Europe/Kyiv}
+      SERVERURL: ${WG_HOST:-auto}           # public name/IP clients connect to (auto = detect)
+      SERVERPORT: ${WG_PORT:-51820}
+      PEERS: ${WG_PEERS:-phone,laptop}
+      PEERDNS: auto                         # peers resolve vault.vpn through the tunnel
+      INTERNAL_SUBNET: 10.13.13.0
+      ALLOWEDIPS: 10.13.13.1/32,10.213.77.0/24
+      PERSISTENTKEEPALIVE_PEERS: all
+      LOG_CONFS: "false"
+    volumes:
+      - ${WG_CONFIG:-./wireguard}:/config   # peer configs + QR codes: wireguard/peer_<name>/
+      - ./wireguard-template/server.conf:/config/templates/server.conf:ro   # firewall: VPN → vault only
+    ports:
+      - "${WG_PORT:-51820}:51820/udp"
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+    networks:
+      vaultnet:
+        ipv4_address: 10.213.77.2
+
+networks:
+  vaultnet:
+    ipam:
+      config:
+        - subnet: 10.213.77.0/24
+
+volumes:
+  vault-state:

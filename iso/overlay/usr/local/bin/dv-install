@@ -1,0 +1,256 @@
+#!/bin/sh
+# docs-vault appliance installer. Runs on the live ISO consoles (tty1 and ttyS0, see /etc/inittab).
+# Installs Alpine Linux + docker + docs-vault (+ optional WireGuard VPN) onto a disk.
+#
+# Unattended mode: put the answers into docs-vault/autoinstall.env on the boot media
+# (DV_DISK, DV_ROOTPW, DV_USER, DV_PASS, DV_HOSTNAME, DV_TZ, DV_VPN, DV_WG_HOST, DV_WG_PORT,
+#  DV_WG_PEERS, DV_PORT, DV_AFTER=reboot|poweroff|none, DV_AUTO_TTY=tty1).
+
+LOG=/var/log/dv-install.log
+LOCK=/run/dv-install.lock
+TTY=$(tty 2>/dev/null | sed 's|/dev/||')
+
+MEDIA=$(sed -n 's|/apks$||p' /etc/apk/repositories | grep '^/' | head -n1)
+[ -n "$MEDIA" ] || MEDIA=/media/cdrom
+PAYLOAD=$MEDIA/docs-vault
+
+say()  { printf '%s\n' "$*"; }
+log()  { printf '[%s] %s\n' "$(date +%T)" "$*" | tee -a "$LOG"; }
+die()  { log "ERROR: $*"; say "Installation failed. Log: $LOG"; say "Press Enter for a shell."; read -r _; exec /bin/sh -l; }
+run()  { log "+ $*"; "$@" >>"$LOG" 2>&1 || die "command failed: $*"; }
+rand() { tr -dc "$1" </dev/urandom | head -c "$2"; }
+
+# ---------- one installer at a time ----------
+take_lock() {
+	if mkdir "$LOCK" 2>/dev/null; then echo $$ >"$LOCK/pid"; return 0; fi
+	pid=$(cat "$LOCK/pid" 2>/dev/null)
+	if [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null; then return 1; fi
+	rm -rf "$LOCK"; mkdir "$LOCK" 2>/dev/null && echo $$ >"$LOCK/pid"
+}
+other_console() {
+	say ""; say "The installer is running on another console ($(cat "$LOCK/pid" 2>/dev/null))."
+	say "Log: $LOG    Press Enter for a login prompt."
+	read -r _; exec /bin/login
+}
+
+# ---------- answers ----------
+AUTO=""
+if [ -f "$PAYLOAD/autoinstall.env" ]; then
+	. "$PAYLOAD/autoinstall.env"
+	if [ "$TTY" = "${DV_AUTO_TTY:-tty1}" ]; then AUTO=1; else
+		say "Unattended install runs on ${DV_AUTO_TTY:-tty1}. Log: $LOG"; read -r _; exec /bin/login
+	fi
+fi
+
+if [ -z "$AUTO" ]; then
+	clear
+	cat <<'EOF'
+
+  ==========================================================
+    docs-vault appliance installer
+    Alpine Linux + docker + documentation vault + WireGuard
+  ==========================================================
+
+  This installs docs-vault onto a disk. THE CHOSEN DISK WILL BE ERASED.
+
+  Press Enter to start the installer (Ctrl+Alt+F2 for a shell).
+EOF
+	read -r _
+fi
+take_lock || other_console
+: >"$LOG"
+
+# ask VAR "question" "default"
+ask() {
+	eval "cur=\${$1:-}"
+	if [ -n "$AUTO" ]; then [ -n "$cur" ] || eval "$1=\$3"; return; fi
+	printf '%s [%s]: ' "$2" "$3"
+	read -r ans
+	[ -n "$ans" ] || ans=$3
+	eval "$1=\$ans"
+}
+ask_secret() {   # ask_secret VAR "question"
+	eval "cur=\${$1:-}"
+	if [ -n "$AUTO" ]; then return; fi
+	while :; do
+		printf '%s: ' "$2"; stty -echo; read -r a; stty echo; echo
+		printf 'Repeat: ';  stty -echo; read -r b; stty echo; echo
+		if [ -z "$a" ]; then say "  empty, try again"; continue; fi
+		if [ "$a" != "$b" ]; then say "  does not match, try again"; continue; fi
+		eval "$1=\$a"; return
+	done
+}
+
+boot_disk() {   # disk holding the boot media (never offered as target)
+	dev=$(awk -v m="$MEDIA" '$2==m {print $1}' /proc/mounts | head -n1)
+	dev=${dev#/dev/}
+	[ -n "$dev" ] || return
+	if [ -e "/sys/class/block/$dev/partition" ]; then basename "$(readlink -f "/sys/class/block/$dev/..")"; else echo "$dev"; fi
+}
+list_disks() {
+	skip=$(boot_disk)
+	for d in /sys/block/*; do
+		n=${d##*/}
+		case $n in loop*|ram*|sr*|fd*|zram*|dm-*|md*|nbd*) continue ;; esac
+		[ "$n" = "$skip" ] && continue
+		[ "$(cat "$d/size")" -gt 0 ] 2>/dev/null || continue
+		gb=$(( $(cat "$d/size") * 512 / 1000000000 ))
+		model=$(cat "$d/device/model" 2>/dev/null | tr -s ' ')
+		say "$n ${gb}GB ${model}"
+	done
+}
+
+DISKS=$(list_disks)
+[ -n "$DISKS" ] || die "no disk found to install to"
+if [ -z "$AUTO" ]; then
+	say ""; say "Disks:"; say "$DISKS" | sed 's/^/  /'; say ""
+fi
+ask DV_DISK "Install to disk" "$(say "$DISKS" | head -n1 | cut -d' ' -f1)"
+DV_DISK=${DV_DISK#/dev/}
+say "$DISKS" | cut -d' ' -f1 | grep -qx "$DV_DISK" || die "unknown disk: $DV_DISK"
+
+ask DV_HOSTNAME "Hostname" "docs-vault"
+ask DV_TZ "Time zone" "Europe/Kyiv"
+[ -n "$AUTO" ] || say "Root password (console login of the appliance):"
+ask_secret DV_ROOTPW "Root password"
+[ -n "${DV_ROOTPW:-}" ] || die "root password not set"
+
+DEF_USER=$(rand 'a-z0-9' 4); DEF_PASS=$(rand 'A-Za-z0-9' 10)
+ask DV_USER "Editor login" "$DEF_USER"
+ask DV_PASS "Editor password" "$DEF_PASS"
+case $DV_USER in ''|*[!A-Za-z0-9._-]*) die "editor login: use letters, digits . _ -" ;; esac
+case $DV_PASS in *[@,\|\ ]*|'') die "editor password must not be empty or contain @ , | or spaces" ;; esac
+ask DV_PORT "Web port" "80"
+
+ask DV_VPN "Enable WireGuard VPN (y/n)" "y"
+case $DV_VPN in [Yy]*) DV_VPN=y ;; *) DV_VPN=n ;; esac
+if [ "$DV_VPN" = y ]; then
+	ask DV_WG_HOST "Public name or IP that VPN clients connect to (auto = detect)" "auto"
+	ask DV_WG_PORT "VPN UDP port (forward it on your router)" "51820"
+	ask DV_WG_PEERS "VPN client names (comma separated)" "phone,laptop"
+fi
+
+if [ -z "$AUTO" ]; then
+	say ""
+	say "Summary:"
+	say "  disk:      /dev/$DV_DISK  (WILL BE ERASED)"
+	say "  hostname:  $DV_HOSTNAME   time zone: $DV_TZ"
+	say "  editor:    $DV_USER / $DV_PASS"
+	say "  web port:  $DV_PORT"
+	[ "$DV_VPN" = y ] && say "  VPN:       $DV_WG_HOST:$DV_WG_PORT/udp  clients: $DV_WG_PEERS" || say "  VPN:       off"
+	say ""
+	printf 'Type "erase" to install: '; read -r ok
+	[ "$ok" = erase ] || { say "Cancelled."; sleep 2; exit 0; }
+fi
+
+# ---------- install ----------
+log "installing to /dev/$DV_DISK (log: $LOG)"
+grep -q "^$MEDIA/dv-apks\$" /etc/apk/repositories || echo "$MEDIA/dv-apks" >>/etc/apk/repositories
+
+run setup-hostname "$DV_HOSTNAME"
+run hostname "$DV_HOSTNAME"
+if [ -f "/usr/share/zoneinfo/$DV_TZ" ] || apk add -q tzdata >>"$LOG" 2>&1; then
+	cp "/usr/share/zoneinfo/$DV_TZ" /etc/localtime 2>/dev/null && echo "$DV_TZ" >/etc/timezone
+fi
+echo "root:$DV_ROOTPW" | chpasswd >>"$LOG" 2>&1 || die "cannot set root password"
+
+log "adding packages (docker, compose, chrony)"
+run apk add -q docker docker-cli-compose chrony
+run rc-update add docker default
+run rc-update add chronyd default
+run rc-update add networking boot
+
+log "partitioning and installing the system (a few minutes)"
+export ERASE_DISKS="/dev/$DV_DISK"
+[ -d /sys/firmware/efi ] && export USE_EFI=1
+run setup-disk -m sys -s 0 -k virt "/dev/$DV_DISK"
+
+# root filesystem = last partition of the disk
+ROOTDEV=$(ls /sys/class/block/ | grep -E "^${DV_DISK}p?[0-9]+\$" | sort | tail -n1)
+[ -n "$ROOTDEV" ] || die "cannot find the root partition"
+run mount "/dev/$ROOTDEV" /mnt
+T=/mnt
+
+# UEFI: also install the boot loader at the removable-media fallback path, so the disk boots
+# even when the firmware has no boot entry for it (moved disk, reset NVRAM, many VMs)
+if [ -d /sys/firmware/efi ]; then
+	EFIDEV=$(ls /sys/class/block/ | grep -E "^${DV_DISK}p?[0-9]+\$" | sort | head -n1)
+	run mount "/dev/$EFIDEV" "$T/boot/efi"
+	EFIBIN=$(find "$T/boot/efi/EFI" -iname 'grubx64.efi' | head -n1)
+	[ -n "$EFIBIN" ] || die "grubx64.efi not found on the EFI partition"
+	run mkdir -p "$T/boot/efi/EFI/BOOT"
+	run cp "$EFIBIN" "$T/boot/efi/EFI/BOOT/BOOTX64.EFI"
+	run umount "$T/boot/efi"
+fi
+
+log "installing docs-vault"
+run mkdir -p "$T/opt/docs-vault/images" "$T/srv/vault/data" "$T/srv/vault/wireguard"
+run cp "$PAYLOAD/compose.yml" "$T/opt/docs-vault/"
+run cp -r "$PAYLOAD/wireguard-template" "$T/opt/docs-vault/"
+for f in "$PAYLOAD"/images/*; do run cp "$f" "$T/opt/docs-vault/images/"; done
+[ -f "$PAYLOAD/README.md" ] && cp "$PAYLOAD/README.md" "$T/opt/docs-vault/"
+chown 1000:100 "$T/srv/vault/data" "$T/srv/vault/wireguard"
+
+WG_TAG=$(cat "$PAYLOAD/images/wireguard.ref" 2>/dev/null | sed 's/.*://')
+umask 077
+cat >"$T/opt/docs-vault/.env" <<EOF
+# docs-vault settings — after changes: rc-service docs-vault restart
+VAULT_USER=$DV_USER
+VAULT_PASS=$DV_PASS
+VAULT_DATA=/srv/vault/data
+VAULT_PORT=$DV_PORT
+VAULT_TRUSTED_PROXIES=
+PUID=1000
+PGID=100
+TZ=$DV_TZ
+
+$( [ "$DV_VPN" = y ] && echo "COMPOSE_PROFILES=vpn" || echo "#COMPOSE_PROFILES=vpn" )
+WG_HOST=${DV_WG_HOST:-auto}
+WG_PORT=${DV_WG_PORT:-51820}
+WG_PEERS=${DV_WG_PEERS:-phone,laptop}
+WG_CONFIG=/srv/vault/wireguard
+WG_IMAGE_TAG=${WG_TAG:-latest}
+EOF
+umask 022
+
+S=/usr/local/share/dv
+run install -m 755 "$S/docs-vault.initd" "$T/etc/init.d/docs-vault"
+run install -m 755 "$S/issue.start" "$T/etc/local.d/issue.start"
+run install -m 755 "$S/vault-peer" "$T/usr/local/bin/vault-peer"
+run install -m 644 "$S/inittab" "$T/etc/inittab"
+run install -m 644 "$S/motd" "$T/etc/motd"
+rm -f "$T/usr/local/bin/dv-install"
+for s in docker docs-vault chronyd local; do ln -sf "/etc/init.d/$s" "$T/etc/runlevels/default/$s"; done
+ln -sf /etc/init.d/networking "$T/etc/runlevels/boot/networking"
+grep -qx wireguard "$T/etc/modules" 2>/dev/null || echo wireguard >>"$T/etc/modules"
+cat >"$T/etc/apk/repositories" <<EOF
+https://dl-cdn.alpinelinux.org/alpine/v$(cut -d. -f1,2 /etc/alpine-release)/main
+https://dl-cdn.alpinelinux.org/alpine/v$(cut -d. -f1,2 /etc/alpine-release)/community
+EOF
+install -m 600 "$LOG" "$T/var/log/dv-install.log" 2>/dev/null
+sync
+run umount /mnt
+
+log "done"
+cat <<EOF | tee -a "$LOG"
+
+  ==========================================================
+    docs-vault installed on /dev/$DV_DISK
+  ==========================================================
+    Editor login:     $DV_USER
+    Editor password:  $DV_PASS
+    (stored in /opt/docs-vault/.env on the installed system)
+
+    After reboot the console shows the web address.
+$( [ "$DV_VPN" = y ] && printf '    VPN: forward UDP %s to this machine; show a client with:\n         vault-peer %s\n' "${DV_WG_PORT:-51820}" "$(echo "${DV_WG_PEERS:-phone}" | cut -d, -f1)" )
+    First start loads the container images (~1 minute).
+  ==========================================================
+EOF
+
+if [ -n "$AUTO" ]; then
+	case ${DV_AFTER:-reboot} in poweroff) poweroff ;; none) ;; *) reboot ;; esac
+	exec /bin/sh -l
+fi
+say ""; say "Remove the installation media and press Enter to reboot."
+read -r _
+reboot

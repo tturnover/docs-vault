@@ -1,0 +1,11 @@
+#!/bin/sh
+# Show a WireGuard client: QR code (scan with the WireGuard phone app) and config file path.
+WG=/srv/vault/wireguard
+if [ -z "$1" ]; then
+	echo "usage: vault-peer <name>"
+	echo "clients:"; ls "$WG" 2>/dev/null | sed -n 's/^peer_/  /p'
+	echo "add/remove clients: edit WG_PEERS in /opt/docs-vault/.env, then: rc-service docs-vault restart"
+	exit 1
+fi
+docker exec docs-vault-wg /app/show-peer "$1" || exit 1
+echo "config file: $WG/peer_$1/peer_$1.conf"

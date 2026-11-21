@@ -1,0 +1,36 @@
+#!/sbin/openrc-run
+# docs-vault: loads the bundled container images (first boot) and runs docker compose.
+
+name="docs-vault"
+description="Documentation vault (docker compose)"
+DIR=/opt/docs-vault
+
+depend() {
+	need docker
+	after net
+}
+
+start() {
+	ebegin "Starting docs-vault"
+	i=0
+	while ! docker info >/dev/null 2>&1; do
+		i=$((i + 1))
+		if [ $i -gt 60 ]; then eend 1 "docker is not ready"; return 1; fi
+		sleep 1
+	done
+	for f in "$DIR"/images/*.tar.gz; do
+		[ -e "$f" ] || continue
+		ref=$(cat "${f%.tar.gz}.ref" 2>/dev/null)
+		if [ -z "$ref" ] || ! docker image inspect "$ref" >/dev/null 2>&1; then
+			docker load -i "$f" >/dev/null || { eend 1 "cannot load $f"; return 1; }
+		fi
+	done
+	cd "$DIR" && docker compose --env-file .env up -d --remove-orphans >>/var/log/docs-vault.log 2>&1
+	eend $?
+}
+
+stop() {
+	ebegin "Stopping docs-vault"
+	cd "$DIR" && docker compose --env-file .env stop >>/var/log/docs-vault.log 2>&1
+	eend $?
+}
